@@ -1,6 +1,6 @@
 ---
 title: Agent standards ecosystem
-description: Mutual links across Agent Knowledge, Agent UI, Agent Runtime, Agent Evidence, Agent Policy, Agent Artifact, and Agent Tool.
+description: Mutual links across Agent Knowledge, Agent UI, Agent Runtime, Agent Evidence, Agent Policy, Agent Artifact, Agent Tool, and Agent Context.
 ---
 
 # Agent 标准生态
@@ -24,6 +24,7 @@ Tool explains what capability was exposed, how it was selected, what call was ma
 | Agent Policy | Risk, permission, approval, retention, waiver, access, and policy decision facts. | [site](https://limecloud.github.io/agentpolicy/) | [llms-full](https://limecloud.github.io/agentpolicy/llms-full.txt) | [repo](https://github.com/limecloud/agentpolicy) |
 | Agent Artifact | Durable deliverables, versions, parts, previews, exports, source links, and handoff packages. | [site](https://limecloud.github.io/agentartifact/) | [llms-full](https://limecloud.github.io/agentartifact/llms-full.txt) | [repo](https://github.com/limecloud/agentartifact) |
 | Agent Tool | 工具声明、工具面、调用、进度、结果、权限和审计引用。 | [site](https://limecloud.github.io/agenttool/) | [llms-full](https://limecloud.github.io/agenttool/llms-full.txt) | [repo](https://github.com/limecloud/agenttool) |
+| Agent Context | Agent 当前可用、选择、预算、组装、注入、压缩、缺失与脱敏的上下文事实。 | [site](https://limecloud.github.io/agentcontext/) | [llms-full](https://limecloud.github.io/agentcontext/llms-full.txt) | [repo](https://github.com/limecloud/agentcontext) |
 
 ## 边界规则
 
@@ -35,6 +36,7 @@ Agent Evidence  -> why an agent outcome can be trusted, reviewed, replayed, and 
 Agent Policy    -> whether an agent action may proceed and under which constraints
 Agent Artifact  -> what durable deliverable the agent produced and how it changes
 Agent Tool      -> what capability was exposed, invoked, progressed, and returned
+Agent Context   -> Agent 当前可用、选择、组装、压缩、缺失并注入了什么上下文
 ```
 
 No standard should become the whole stack. A compatible implementation should preserve native ids and link across standards with refs.
@@ -43,7 +45,6 @@ No standard should become the whole stack. A compatible implementation should pr
 
 | Candidate | Why it may become a standard |
 | --- | --- |
-| Agent Context | Working context, memory, compaction, missing context, and source selection boundaries. |
 | Agent Evaluation | Acceptance scenarios, rubrics, eval runs, quality gates, and evidence-backed benchmark records. |
 | Agent Workflow | Portable multi-step work plans, scene launches, background jobs, and handoff states. |
 | Agent Model Routing | Task profiles, model candidates, routing decisions, fallback, quota, and cost records. |

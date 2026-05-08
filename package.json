@@ -1,6 +1,6 @@
 {
   "name": "agenttool-standard",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "type": "module",
   "description": "Draft documentation for the Agent Tool standard.",
   "homepage": "https://limecloud.github.io/agenttool/",
