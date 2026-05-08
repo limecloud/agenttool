@@ -15,7 +15,10 @@ It SHOULD describe:
 - network scope and tenant scope.
 - sandbox profile and credential refs.
 - whether approval is required.
+- whether permission prompts can be avoided in non-interactive mode.
+- rule matching fields such as path, command, URL, native operation id, or resource id.
 - redaction and retention hints.
 
-Agent Policy owns allow/deny/ask/defer/escalate. Agent Tool owns the tool facts that make that decision explainable.
+Agent Policy owns allow/deny/ask/defer/escalate. Agent Tool owns the tool facts and the per-invocation decision record that make that decision explainable.
 
+See [Permission decision](./permission-decision.md) for the concrete decision object.

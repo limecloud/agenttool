@@ -1,4 +1,5 @@
 {
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
   "title": "Agent Tool invocation",
   "type": "object",
   "required": [
@@ -27,8 +28,20 @@
     "status": {
       "type": "string"
     },
-    "arguments": {},
-    "arguments_ref": {
+    "model_input": {},
+    "model_input_ref": {
+      "type": "string"
+    },
+    "observable_input": {},
+    "observable_input_ref": {
+      "type": "string"
+    },
+    "permission_input": {},
+    "permission_input_ref": {
+      "type": "string"
+    },
+    "call_input": {},
+    "call_input_ref": {
       "type": "string"
     },
     "actor_ref": {
@@ -41,6 +54,18 @@
       }
     },
     "policy_refs": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "permission_decision_refs": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "hook_refs": {
       "type": "array",
       "items": {
         "type": "string"
@@ -59,6 +84,23 @@
         "additionalProperties": true
       }
     },
+    "artifact_refs": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": true
+      }
+    },
+    "scheduler_policy_ref": {
+      "type": "string"
+    },
+    "status_transitions": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": true
+      }
+    },
     "created_at": {
       "type": "string"
     },
@@ -69,6 +111,5 @@
       "type": "string"
     }
   },
-  "$schema": "https://json-schema.org/draft/2020-12/schema",
   "additionalProperties": true
 }

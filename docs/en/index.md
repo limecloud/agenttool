@@ -2,8 +2,8 @@
 layout: home
 hero:
   name: Agent Tool
-  text: Portable tool surfaces for agent systems
-  tagline: Declarations, capability refs, invocation lifecycle, progress, results, permissions, and audit links for tools used by agents.
+  text: Portable tool systems for agents
+  tagline: Declarations, runtime interfaces, scoped surfaces, input mutation, permission decisions, scheduling, progress, results, persistence, and audit links for tools used by agents.
   image:
     src: /logo.svg
     alt: Agent Tool logo
@@ -16,15 +16,15 @@ hero:
       link: ../llms-full.txt
 features:
   - title: Declare tools clearly
-    details: Stable ids, namespaces, input/output schemas, capability refs, risk scopes, and execution profiles.
-  - title: Invoke tools safely
-    details: Invocation ids, approval gates, progress events, cancellation, retries, timeouts, and structured errors.
+    details: Stable ids, aliases, namespaces, search hints, schemas, capability refs, risk scopes, and native mappings.
+  - title: Execute tools safely
+    details: Separate model input from observable, permission, and call input; preserve validation, hooks, permission decisions, and scheduling facts.
   - title: Keep outputs portable
-    details: Result envelopes link to resources, artifacts, evidence, policy decisions, runtime events, and telemetry spans.
+    details: Result envelopes link model content, UI rendering, persisted payloads, resources, artifacts, evidence, policy, runtime events, and telemetry spans.
 ---
 
 # Agent Tool
 
-Agent Tool is a portable standard for the tool layer in agent systems. It defines how tools are described, selected, invoked, monitored, constrained, and returned without replacing MCP, OpenAPI, function calling APIs, runtime executors, UI renderers, policy engines, evidence archives, or artifact stores.
+Agent Tool is a portable standard for the tool layer in agent systems. It defines how tools are described, selected, invoked, authorized, scheduled, streamed, monitored, constrained, persisted, rendered, and returned without replacing MCP, OpenAPI, function calling APIs, runtime executors, UI renderers, policy engines, evidence archives, or artifact stores.
 
-Use Agent Tool when a product needs stable semantics for capabilities such as file access, web search, browser control, code execution, API calls, media generation, document extraction, tool search, and native application actions.
+Use Agent Tool when a product needs stable semantics for capabilities such as file access, web search, browser control, shell commands, code execution, API calls, media generation, document extraction, tool search, MCP servers, peer-agent calls, and native application actions.

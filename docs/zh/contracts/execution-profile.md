@@ -1,13 +1,13 @@
 ---
 title: Execution profile
-description: Agent Tool Execution profile。
+description: Agent Tool 执行 profile。
 ---
 
 # Execution Profile
 
-`tool_execution_profile` 描述工具如何运行。
+`tool_execution_profile` 描述工具如何被运行。
 
-## 执行类型
+## Execution kinds
 
 初始 execution kinds：
 
@@ -22,18 +22,30 @@ description: Agent Tool Execution profile。
 - `embedded_runtime`
 - `hybrid`
 
-## 能力声明
+## Capabilities
 
-Profile SHOULD 明确是否支持：
+Profiles SHOULD 声明是否支持：
 
 - streaming progress
 - cancellation
+- timeout
 - resume
 - retries
 - partial results
+- background tasks
+- result persistence
 - artifacts
 - sandboxing
 - credential delegation
 - offline execution
+- context modifiers
 
-如果某项能力不支持，就显式写出。静默 fallback 会造成不安全的 Agent 行为。
+如果某能力不支持，要明确说明。Silent fallback 会制造不安全的 agent behavior。
+
+## Shell 与 local process profiles
+
+Shell-like tools SHOULD 声明 command parsing strategy、working directory policy、environment policy、sandbox profile、background execution support、timeout behavior、exit-code interpretation 与 classifier input。
+
+## Remote profiles
+
+Remote tools SHOULD 保留 native request ids、session ids、protocol versions、server names、retry semantics 与 protocol-level error distinctions。

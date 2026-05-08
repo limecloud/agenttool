@@ -1,0 +1,117 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Agent Tool interface",
+  "type": "object",
+  "required": [
+    "schema_version",
+    "interface_id",
+    "tool_id"
+  ],
+  "properties": {
+    "schema_version": {
+      "type": "string"
+    },
+    "interface_id": {
+      "type": "string"
+    },
+    "tool_id": {
+      "type": "string"
+    },
+    "name": {
+      "type": "string"
+    },
+    "aliases": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "search_hint": {
+      "type": "string"
+    },
+    "model_input_schema": {
+      "type": "object",
+      "additionalProperties": true
+    },
+    "runtime_input_schema": {
+      "type": "object",
+      "additionalProperties": true
+    },
+    "output_schema": {
+      "type": "object",
+      "additionalProperties": true
+    },
+    "strict": {
+      "type": "boolean"
+    },
+    "schema_visibility": {
+      "enum": [
+        "loaded",
+        "deferred",
+        "internal",
+        "native_ref"
+      ]
+    },
+    "is_enabled": {
+      "type": [
+        "boolean",
+        "string"
+      ]
+    },
+    "is_read_only": {
+      "type": [
+        "boolean",
+        "string"
+      ]
+    },
+    "is_concurrency_safe": {
+      "type": [
+        "boolean",
+        "string"
+      ]
+    },
+    "is_destructive": {
+      "type": [
+        "boolean",
+        "string"
+      ]
+    },
+    "is_open_world": {
+      "type": [
+        "boolean",
+        "string"
+      ]
+    },
+    "requires_user_interaction": {
+      "type": "boolean"
+    },
+    "classifier_input": {},
+    "permission_matcher": {
+      "type": "string"
+    },
+    "execution_profile_ref": {
+      "type": "string"
+    },
+    "permission_profile_ref": {
+      "type": "string"
+    },
+    "persistence_policy_ref": {
+      "type": "string"
+    },
+    "max_inline_chars": {
+      "type": "integer"
+    },
+    "rendering": {
+      "type": "object",
+      "additionalProperties": true
+    },
+    "external_mappings": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": true
+      }
+    }
+  },
+  "additionalProperties": true
+}

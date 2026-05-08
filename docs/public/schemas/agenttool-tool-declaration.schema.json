@@ -1,4 +1,5 @@
 {
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
   "title": "Agent Tool declaration",
   "type": "object",
   "required": [
@@ -23,6 +24,15 @@
     "name": {
       "type": "string"
     },
+    "aliases": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "search_hint": {
+      "type": "string"
+    },
     "title": {
       "type": "string"
     },
@@ -35,6 +45,7 @@
         "available",
         "disabled",
         "requires_setup",
+        "deferred",
         "deprecated",
         "retired"
       ]
@@ -56,6 +67,9 @@
       "type": "object",
       "additionalProperties": true
     },
+    "interface_ref": {
+      "type": "string"
+    },
     "execution_profile_ref": {
       "type": "string"
     },
@@ -74,6 +88,5 @@
       "additionalProperties": true
     }
   },
-  "$schema": "https://json-schema.org/draft/2020-12/schema",
   "additionalProperties": true
 }

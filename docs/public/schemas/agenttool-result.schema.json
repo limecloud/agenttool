@@ -1,4 +1,5 @@
 {
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
   "title": "Agent Tool result",
   "type": "object",
   "required": [
@@ -21,6 +22,9 @@
     "status": {
       "type": "string"
     },
+    "is_error": {
+      "type": "boolean"
+    },
     "content": {
       "type": "array",
       "items": {
@@ -29,6 +33,16 @@
       }
     },
     "structured_content": {},
+    "model_facing_content": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": true
+      }
+    },
+    "ui_facing_summary": {
+      "type": "string"
+    },
     "resource_refs": {
       "type": "array",
       "items": {
@@ -62,16 +76,25 @@
         "additionalProperties": true
       }
     },
+    "persistence_refs": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
     "summary": {
       "type": "string"
     },
     "redaction_state": {
       "type": "string"
     },
+    "error": {
+      "type": "object",
+      "additionalProperties": true
+    },
     "created_at": {
       "type": "string"
     }
   },
-  "$schema": "https://json-schema.org/draft/2020-12/schema",
   "additionalProperties": true
 }

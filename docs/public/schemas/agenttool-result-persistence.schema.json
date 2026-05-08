@@ -1,0 +1,60 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Agent Tool result persistence",
+  "type": "object",
+  "required": [
+    "schema_version",
+    "decision_id",
+    "invocation_id",
+    "strategy",
+    "created_at"
+  ],
+  "properties": {
+    "schema_version": {
+      "type": "string"
+    },
+    "decision_id": {
+      "type": "string"
+    },
+    "invocation_id": {
+      "type": "string"
+    },
+    "result_id": {
+      "type": "string"
+    },
+    "strategy": {
+      "enum": [
+        "inline",
+        "preview_and_persist",
+        "ref_only",
+        "redact",
+        "drop_with_reason",
+        "never_persist"
+      ]
+    },
+    "threshold": {
+      "type": "object",
+      "additionalProperties": true
+    },
+    "original_size_bytes": {
+      "type": "integer"
+    },
+    "preview_size_bytes": {
+      "type": "integer"
+    },
+    "persisted_ref": {
+      "type": "object",
+      "additionalProperties": true
+    },
+    "redaction_state": {
+      "type": "string"
+    },
+    "reason": {
+      "type": "string"
+    },
+    "created_at": {
+      "type": "string"
+    }
+  },
+  "additionalProperties": true
+}

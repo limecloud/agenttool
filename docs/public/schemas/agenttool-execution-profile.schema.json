@@ -1,4 +1,5 @@
 {
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
   "title": "Agent Tool execution profile",
   "type": "object",
   "required": [
@@ -31,11 +32,20 @@
     "supports_partial_results": {
       "type": "boolean"
     },
+    "supports_background": {
+      "type": "boolean"
+    },
     "supports_artifacts": {
+      "type": "boolean"
+    },
+    "supports_context_modifiers": {
       "type": "boolean"
     },
     "sandboxed": {
       "type": "boolean"
+    },
+    "sandbox_profile": {
+      "type": "string"
     },
     "timeout_ms": {
       "type": "integer"
@@ -48,6 +58,5 @@
       }
     }
   },
-  "$schema": "https://json-schema.org/draft/2020-12/schema",
   "additionalProperties": true
 }

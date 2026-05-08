@@ -1,0 +1,54 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Agent Tool input mutation",
+  "type": "object",
+  "required": [
+    "schema_version",
+    "mutation_id",
+    "invocation_id",
+    "source_type",
+    "created_at"
+  ],
+  "properties": {
+    "schema_version": {
+      "type": "string"
+    },
+    "mutation_id": {
+      "type": "string"
+    },
+    "invocation_id": {
+      "type": "string"
+    },
+    "source_type": {
+      "enum": [
+        "hook",
+        "permission_prompt",
+        "adapter",
+        "migration",
+        "runtime"
+      ]
+    },
+    "source_ref": {
+      "type": "string"
+    },
+    "from_input_ref": {
+      "type": "string"
+    },
+    "to_input_ref": {
+      "type": "string"
+    },
+    "changed_fields": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "reason": {
+      "type": "string"
+    },
+    "created_at": {
+      "type": "string"
+    }
+  },
+  "additionalProperties": true
+}

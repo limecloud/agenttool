@@ -1,0 +1,62 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Agent Tool deferred tool",
+  "type": "object",
+  "required": [
+    "schema_version",
+    "tool_id",
+    "name",
+    "loading_state"
+  ],
+  "properties": {
+    "schema_version": {
+      "type": "string"
+    },
+    "tool_id": {
+      "type": "string"
+    },
+    "name": {
+      "type": "string"
+    },
+    "namespace": {
+      "type": "string"
+    },
+    "search_hint": {
+      "type": "string"
+    },
+    "source": {
+      "type": "string"
+    },
+    "schema_visibility": {
+      "enum": [
+        "loaded",
+        "deferred",
+        "internal",
+        "native_ref"
+      ]
+    },
+    "loading_state": {
+      "enum": [
+        "loaded",
+        "deferred",
+        "discoverable",
+        "pending_provider",
+        "unavailable"
+      ]
+    },
+    "reason": {
+      "type": "string"
+    },
+    "pending_provider_or_server": {
+      "type": "string"
+    },
+    "selection_ref": {
+      "type": "string"
+    },
+    "native_ref": {
+      "type": "object",
+      "additionalProperties": true
+    }
+  },
+  "additionalProperties": true
+}

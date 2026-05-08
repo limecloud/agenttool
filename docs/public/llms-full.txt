@@ -2,41 +2,43 @@
 
 Source root: https://limecloud.github.io/agenttool
 
-Agent Tool is a portable standard for agent tool declarations, context-specific tool surfaces, input/output contracts, execution profiles, permission profiles, invocations, progress, results, errors, resource refs, artifact refs, policy refs, evidence refs, and telemetry refs. It does not replace MCP, OpenAPI, function calling APIs, runtime executors, policy engines, UI surfaces, evidence archives, artifact stores, knowledge systems, or skill package formats.
+Agent Tool is a portable standard for agent tool declarations, runtime interfaces, context-specific tool surfaces, input/output contracts, execution profiles, permission decisions, hooks, invocations, scheduling, progress, results, result persistence, errors, resource refs, artifact refs, policy refs, evidence refs, and telemetry refs. It does not replace MCP, OpenAPI, function calling APIs, runtime executors, policy engines, UI surfaces, evidence archives, artifact stores, knowledge systems, or skill package formats.
 
 
 
-# What is Agent Tool?
+# What Is Agent Tool
 Source: https://limecloud.github.io/agenttool/en/what-is-agent-tool
 
 # What is Agent Tool?
 
-Agent Tool defines the portable tool surface for agent systems. It is the common record of what capability is being exposed, what inputs are allowed, how an invocation is authorized and executed, how progress is reported, what result came back, and which adjacent systems can audit or render the outcome.
+Agent Tool defines the portable tool layer for agent systems. It is the common record of what capability is exposed, which surface made it visible, what input the model proposed, how hooks and permission decisions changed it, how it was scheduled and executed, what progress streamed, what result came back, and which adjacent systems can audit, render, persist, or replay the outcome.
 
-A tool is not just a JSON function. In an agent product it may be a remote MCP tool, a local file operation, a browser action, a shell command, a native desktop command, a site adapter, a model-powered media task, or a delegated API action. These tools need a common vocabulary that survives provider changes and preserves native ids.
+A tool is not just a JSON function. In an agent product it may be a remote MCP tool, a local file operation, a browser action, a shell command, a native desktop command, a site adapter, a model-powered media task, a tool-search entry, or a peer-agent capability. These tools need a common vocabulary that survives provider changes and preserves native ids.
 
 ## Use Agent Tool when
 
-- a model-facing tool must be listed, filtered, searched, or deferred.
-- a tool needs input and output contracts that can be validated.
-- a tool call requires approval, sandboxing, quota, tenant policy, or human confirmation.
-- progress, cancellation, timeout, retry, and partial result semantics matter.
-- outputs may include structured JSON, text, media, resource refs, artifact refs, or evidence refs.
+- a model-facing tool must be listed, filtered, searched, deferred, loaded, or blocked.
+- a tool needs model-facing and runtime-facing input schemas that can differ safely.
+- hooks or permission prompts may normalize paths, add context, update inputs, or stop execution.
+- a tool call requires approval, sandboxing, quota, tenant policy, classifier checks, or human confirmation.
+- concurrency, ordering, sibling failure, interruption, cancellation, timeout, retry, or partial result semantics matter.
+- outputs may include structured JSON, text, media, resource refs, artifact refs, persisted payload refs, or evidence refs.
 - multiple protocols need to reference the same invocation without losing native ids.
 
 ## What it is not
 
-Agent Tool is not a transport protocol, not an MCP replacement, not an OpenAPI replacement, not a model API, not a runtime executor, not a skill package format, not a policy engine, not a UI component system, not an evidence archive, and not an artifact storage system.
+Agent Tool is not a transport protocol, not an MCP replacement, not an OpenAPI replacement, not a model API, not a runtime scheduler, not a skill package format, not a policy engine, not a UI component system, not an evidence archive, and not an artifact storage system.
 
 | Adjacent system | Owns | Agent Tool owns |
 | --- | --- | --- |
 | MCP / OpenAPI / provider API | Wire protocol and native operation model. | Mapping refs, declaration normalization, invocation envelope, and result mapping. |
-| Agent Runtime | Scheduling, process execution, session state, task lifecycle, recovery. | Tool invocation facts and tool-specific status transitions. |
-| Agent Policy | Allow, deny, ask, risk, retention, waiver, redaction decisions. | Permission profile refs and policy decision refs attached to tool calls. |
-| Agent UI | Composer controls, tool cards, approval prompts, progress projection. | Machine-readable facts that UI can render. |
+| Agent Runtime | Scheduling engine, process execution, session state, task lifecycle, recovery. | Tool-specific scheduling facts, invocation facts, progress, and status transitions. |
+| Agent Policy | Allow, deny, ask, risk, retention, waiver, redaction decisions. | Permission profiles and per-invocation permission decision refs. |
+| Agent UI | Composer controls, tool cards, approval prompts, progress projection. | Machine-readable facts that UI can render without owning the semantics. |
 | Agent Evidence | Provenance, verification, replay, review, audit export. | Tool call refs and result facts that evidence can ingest. |
 | Agent Artifact | Durable deliverables, versions, exports, handoff packages. | Result-to-artifact refs and tool-generated source links. |
 | Agent Skills | Portable instruction bundles and procedural knowledge. | Runtime tool declarations exposed after a skill activates. |
+| Agent Context | Context selection, assembly, injection, compaction, missing-context facts. | Tool inputs, outputs, and hook-added context refs attached to invocations. |
 
 
 
@@ -45,44 +47,52 @@ Source: https://limecloud.github.io/agenttool/en/specification
 
 # Specification
 
-Agent Tool latest draft is a portable standard for agent tool declarations, tool surfaces, input and output contracts, execution profiles, permission profiles, invocations, progress, cancellation, results, errors, resource refs, artifact refs, policy refs, evidence refs, and telemetry refs.
+Agent Tool v0.2.0 is a portable standard for agent tool systems: declarations, scoped surfaces, input/output contracts, execution profiles, permission facts, permission decisions, lifecycle hooks, invocation records, scheduling semantics, progress, cancellation, result envelopes, result persistence, errors, resource refs, artifact refs, policy refs, evidence refs, and telemetry refs.
 
-Agent Tool owns tool semantics. It does not own transport protocols, model APIs, runtime scheduling, policy decisions, UI rendering, evidence review, artifact storage, knowledge selection, or skill package authoring.
+Agent Tool owns tool semantics. It does not own transport protocols, model APIs, runtime scheduling engines, policy decisions, UI rendering, evidence review, artifact storage, knowledge selection, or skill package authoring.
 
 ## Scope
 
 Agent Tool standardizes these implementation concerns:
 
-1. Tool declarations with stable identity, namespace, title, description, lifecycle, capabilities, schemas, annotations, and external mappings.
-2. Tool surfaces that define which tools are visible in a turn, task, session, tenant, skill, or peer-agent context.
-3. Input and output contracts using JSON Schema-compatible structures plus mode, media, and result-shape metadata.
-4. Execution profiles for local, remote, browser, shell, MCP, API, native, model, and hybrid executors.
-5. Permission profiles that describe risk, data access, write effects, network scope, credentials, sandbox, and approval requirements.
-6. Invocation envelopes with invocation ids, call ids, actor refs, runtime refs, policy refs, evidence refs, telemetry refs, and native ids.
-7. Progress, cancellation, timeout, retry, and partial-result semantics.
-8. Result envelopes for text, structured content, media, resources, artifacts, files, logs, and handoff refs.
-9. Error taxonomy that separates protocol, validation, permission, execution, timeout, rate-limit, dependency, and policy-block errors.
-10. Event classes for tool lifecycle and invocation lifecycle changes.
+1. Tool declarations with stable identity, namespace, aliases, title, description, lifecycle, capabilities, schemas, annotations, search hints, safety hints, and external mappings.
+2. Tool interfaces that separate model-facing schema, runtime schema, output schema, validation, permission matching, safety classification, path semantics, rendering hints, and result mapping.
+3. Tool surfaces that define which tools are visible, blocked, deferred, loaded, feature-gated, role-scoped, or model-compatible in a turn, task, session, tenant, skill, peer-agent, or workspace context.
+4. Input/output contracts using JSON Schema-compatible structures plus strictness, argument mode, media mode, sensitive fields, internal-only fields, and result-shape metadata.
+5. Execution profiles for local, remote, browser, shell, MCP, API, native, model, peer-agent, and hybrid executors.
+6. Permission profiles and permission decisions that expose risk facts, data access, write effects, network scope, credentials, sandbox state, approval requirements, rule sources, decision reasons, suggested updates, and classifier state.
+7. Invocation envelopes with invocation ids, native call ids, actor refs, runtime refs, policy refs, evidence refs, telemetry refs, and status transitions.
+8. Hooks and input mutation boundaries for pre-tool, post-tool, failure, additional-context, stop, and updated-input flows.
+9. Progress, cancellation, timeout, retry, sibling failure, synthetic-result, partial-result, and yielded-result semantics.
+10. Result envelopes for text, structured content, media, resources, artifacts, files, logs, diffs, handoff refs, persisted outputs, redaction state, and UI/search rendering boundaries.
+11. Error taxonomy that separates protocol, validation, permission, approval, policy, setup, sandbox, execution, timeout, cancellation, rate-limit, dependency, result-size, and redaction failures.
+12. Event classes for declaration, surface, invocation, hook, permission, scheduling, progress, result, persistence, error, and telemetry changes.
 
-Agent Tool does **not** define a new RPC protocol, command-line interface, GUI component, workflow language, task scheduler, authorization engine, or tool marketplace.
+Agent Tool does **not** define a new RPC protocol, command-line interface, GUI component, workflow language, global task scheduler, authorization engine, tool marketplace, artifact store, or evidence archive.
 
 ## Core objects
 
 | Object | Purpose |
 | --- | --- |
 | `tool_declaration` | Stable description of one callable capability. |
-| `tool_surface` | Context-specific set of tools exposed to an agent or model. |
-| `tool_namespace` | Grouping and collision boundary for tools from one domain, server, skill, or provider. |
-| `tool_input_contract` | Input schema, validation, defaults, examples, and sensitive fields. |
-| `tool_output_contract` | Structured result schema, content types, media modes, and artifact/resource expectations. |
+| `tool_interface` | Runtime contract for schemas, validation, permission hooks, safety hints, execution, result mapping, and display/search metadata. |
+| `tool_surface` | Context-specific set of loaded, deferred, blocked, or discoverable tools exposed to an agent or model. |
+| `tool_namespace` | Grouping and collision boundary for tools from one domain, server, skill, provider, or runtime. |
+| `tool_input_contract` | Model-facing schema, runtime schema, validation, defaults, examples, sensitive fields, internal-only fields, and mutation policy. |
+| `tool_output_contract` | Structured result schema, content types, media modes, result-size policy, rendering boundaries, and artifact/resource expectations. |
 | `tool_execution_profile` | How the tool is executed and what lifecycle operations it supports. |
-| `tool_permission_profile` | Risk, access, sandbox, approval, credential, and redaction requirements. |
+| `tool_permission_profile` | Risk, access, sandbox, approval, credential, redaction, and policy fact profile. |
+| `tool_permission_decision` | Outcome of a permission check: allow, ask, deny, or passthrough with decision reason and optional updated input. |
+| `tool_hook` | Pre-tool, post-tool, or failure extension point that can emit messages, progress, decisions, context, or updated input. |
 | `tool_invocation` | One requested or executed tool call. |
+| `tool_scheduler_policy` | Concurrency, ordering, interrupt, sibling failure, and yield policy for a set of invocations. |
+| `deferred_tool_ref` | Discoverable tool identity whose full schema is not loaded yet. |
 | `tool_progress` | Ordered progress update for an invocation. |
-| `tool_result` | Structured result envelope for a completed or partially completed invocation. |
+| `tool_result` | Structured result envelope for a completed, partial, rejected, or synthetic invocation. |
+| `tool_result_persistence` | Decision to inline, redact, persist, preview, or link large or sensitive output. |
 | `tool_error` | Structured failure reason and retry guidance. |
-| `tool_event` | Lifecycle event envelope for declarations, surfaces, invocations, progress, results, and errors. |
-| `tool_external_mapping` | Reference to native MCP, OpenAPI, provider, CLI, browser, or app operation ids. |
+| `tool_event` | Lifecycle event envelope for declarations, surfaces, invocations, hooks, permissions, progress, results, and errors. |
+| `tool_external_mapping` | Reference to native MCP, OpenAPI, provider, CLI, browser, A2A, or app operation ids. |
 
 ## Tool declaration
 
@@ -90,10 +100,12 @@ Every exported `tool_declaration` SHOULD include:
 
 | Field | Requirement |
 | --- | --- |
-| `schema_version` | Required Agent Tool schema version. |
+| `schema_version` | Required Agent Tool schema version. Use `0.2.0` for this draft. |
 | `tool_id` | Required stable id scoped by producer. |
 | `namespace` | Required collision boundary. |
 | `name` | Required machine-oriented name. |
+| `aliases` | Optional backwards-compatible names. |
+| `search_hint` | Recommended 3-10 word capability phrase for discovery and deferred loading. |
 | `title` | Recommended human-readable title. |
 | `description` | Required model-facing usage guidance. |
 | `lifecycle` | Required lifecycle state. |
@@ -101,10 +113,29 @@ Every exported `tool_declaration` SHOULD include:
 | `capability_refs` | Recommended capability keys or external capability refs. |
 | `input_contract` | Required for tools that accept structured arguments. |
 | `output_contract` | Recommended for structured results. |
+| `interface_ref` | Recommended when runtime behavior is described separately. |
 | `execution_profile_ref` | Recommended. |
 | `permission_profile_ref` | Recommended for non-trivial tools. |
-| `external_mappings` | Recommended when backed by MCP, OpenAPI, provider tools, CLI, browser, or native app APIs. |
+| `external_mappings` | Recommended when backed by MCP, OpenAPI, provider tools, CLI, browser, A2A, or native app APIs. |
 | `annotations` | Optional untrusted hints, display hints, and model hints. |
+
+## Tool interface
+
+A `tool_interface` SHOULD separate these concerns:
+
+| Concern | Required distinction |
+| --- | --- |
+| Identity | `name`, `aliases`, `namespace`, `tool_id`, native ids, and stable display name. |
+| Schemas | `model_input_schema`, `runtime_input_schema`, `output_schema`, `strict`, and schema visibility. |
+| Availability | `is_enabled`, setup state, feature gates, required credentials, model support, and deferred state. |
+| Validation | Schema parsing and tool-specific value validation before permission checks and execution. |
+| Safety classification | `is_read_only`, `is_destructive`, `is_open_world`, `requires_user_interaction`, `sandbox_profile`, and `classifier_input`. |
+| Permission matching | Rule matchers over tool name, path, command, URL, resource, or native operation ids. |
+| Execution | The callable behavior, timeout, abort signal, progress callback, result mapper, and context modifier support. |
+| Rendering | Model-facing result mapping, UI-facing result projection, progress projection, rejection/error projection, grouped rendering, and transcript search text. |
+| Persistence | Tool-specific `max_inline_chars`, opt-out rules, durable refs, previews, and redaction behavior. |
+
+Defaults SHOULD be fail-closed where safety is unclear. A tool should not be treated as concurrency-safe, read-only, non-destructive, or open-world-safe unless it says so.
 
 ## Tool kinds
 
@@ -140,14 +171,30 @@ Tool declarations SHOULD use these lifecycle states:
 | `available` | Tool can be selected and invoked. |
 | `disabled` | Tool exists but is not selectable in the current context. |
 | `requires_setup` | Tool requires credentials, project binding, server startup, or other setup. |
+| `deferred` | Tool is discoverable by name or search, but its full schema is not loaded into the active model context. |
 | `deprecated` | Tool remains for compatibility but should not be newly selected. |
 | `retired` | Tool identity is kept only for historical refs. |
 
 ## Tool surface
 
-A `tool_surface` captures which tools are available in a context. It SHOULD include `surface_id`, `scope`, `created_at`, `producer`, `tool_refs`, `selection_policy`, `default_tool_choice`, `deferred_tools`, `blocked_tools`, `capability_requirements`, `policy_refs`, and `runtime_refs`.
+A `tool_surface` captures which tools are available in a context. It SHOULD include `surface_id`, `scope`, `created_at`, `producer`, `tool_refs`, `loaded_tools`, `deferred_tools`, `blocked_tools`, `excluded_tools`, `selection_policy`, `default_tool_choice`, `capability_requirements`, `model_capabilities`, `role_constraints`, `policy_refs`, `runtime_refs`, and `surface_reason`.
 
-Tool surfaces SHOULD be small enough for the current task. If a catalog is large, implementations should expose discovery or tool search instead of loading every tool into a model prompt.
+Tool surfaces SHOULD be small enough for the current task. If a catalog is large, implementations should expose discovery or tool search instead of loading every tool schema into a model prompt.
+
+Blocked or excluded tools SHOULD carry machine-readable reasons such as `policy_blocked`, `credential_missing`, `setup_required`, `model_unsupported`, `recursive_tool_forbidden`, `role_not_allowed`, `feature_disabled`, or `deferred_until_discovered`.
+
+## Input contract and mutation boundary
+
+A tool call SHOULD distinguish four inputs:
+
+| Input | Meaning |
+| --- | --- |
+| `model_input` | Arguments emitted by the model or caller. Preserve for audit and native call correlation. |
+| `observable_input` | Derived or normalized copy visible to hooks, permission UI, SDK streams, and transcripts. |
+| `permission_input` | Input evaluated by policy, approval, rules, classifiers, and permission prompts. |
+| `call_input` | Final input passed to the executor after allowed hook or permission updates. |
+
+Internal-only fields MUST NOT appear in model-facing schemas. If a hook or permission prompt injects internal fields, the result MUST record the mutation source and must not silently rewrite the original model input.
 
 ## Invocation lifecycle
 
@@ -155,23 +202,89 @@ A `tool_invocation` SHOULD progress through explicit states:
 
 - `planned`
 - `selected`
+- `schema_parse_failed`
 - `arguments_ready`
+- `validation_failed`
+- `pre_hooks_running`
 - `awaiting_approval`
 - `approved`
+- `denied`
+- `queued`
 - `running`
 - `needs_input`
 - `partial_result`
+- `post_hooks_running`
+- `yielded`
 - `succeeded`
 - `failed`
 - `canceled`
 - `timed_out`
 - `blocked`
 
-An implementation MAY skip states that do not apply, but it SHOULD preserve `invocation_id`, native call id, started/ended timestamps, actor refs, runtime refs, and status transitions.
+An implementation MAY skip states that do not apply, but it SHOULD preserve `invocation_id`, native call id, started/ended timestamps, actor refs, runtime refs, policy refs, evidence refs, telemetry refs, and status transitions.
+
+## Execution pipeline
+
+A compatible runtime SHOULD execute tool calls through these phases:
+
+1. Resolve the tool from the current surface by primary name or alias.
+2. Parse `model_input` against the model-facing schema.
+3. Produce a schema-not-sent or needs-discovery error if the tool was deferred and the schema was not loaded.
+4. Run tool-specific value validation and IO preflight checks before side effects.
+5. Create `observable_input` without mutating `model_input`.
+6. Run pre-tool hooks; collect progress, additional context, updated input, stop requests, or permission results.
+7. Resolve permission decisions; deny or rejection outcomes become normal terminal tool results.
+8. Queue or start execution according to scheduler policy.
+9. Execute with timeout, abort signal, progress callback, sandbox, credentials, and native protocol refs.
+10. Map executor output into a model-facing result block exactly once unless post hooks own a protocol-specific output update.
+11. Run post-tool or failure hooks.
+12. Apply result persistence, redaction, artifact/resource linking, telemetry, and evidence refs.
+13. Emit the terminal result and any context modifiers allowed by the scheduler.
+
+## Permission decisions
+
+A `tool_permission_decision` records a decision, not only a profile. Initial behaviors are:
+
+- `allow`
+- `ask`
+- `deny`
+- `passthrough`
+
+Decisions SHOULD include `decision_id`, `invocation_id`, `behavior`, `mode`, `source`, `reason`, `rule_refs`, `policy_refs`, `updated_input`, `user_modified`, `suggested_updates`, `pending_classifier_check`, `blocked_path`, `content_blocks`, `accept_feedback`, `decided_at`, and `expires_at` when relevant.
+
+The permission profile is not the decision. Agent Policy owns policy evaluation. Agent Tool records the tool facts and the concrete decision facts attached to a tool invocation.
+
+## Scheduling and concurrency
+
+A `tool_scheduler_policy` SHOULD state:
+
+- whether the tool is `concurrency_safe` for this specific input.
+- whether read-only, write, destructive, or open-world tools can run in parallel.
+- how results preserve order while progress streams early.
+- interrupt behavior: `cancel` or `block`.
+- sibling failure policy: `ignore`, `cancel_siblings`, or `cancel_dependent`.
+- whether context modifiers are allowed for concurrent tools.
+- how synthetic results are created for user interruption, sibling error, fallback, timeout, or discarded execution.
+
+Concurrency-safe is not the same as read-only. A read tool can be unsafe if it mutates context, consumes a scarce handle, or depends on exclusive process state. A write tool can be safe only if the implementation proves isolation.
+
+## Deferred loading and tool search
+
+Large catalogs SHOULD support deferred loading. A deferred tool is visible enough to be discovered, but its full schema is not necessarily in the active model context.
+
+A `deferred_tool_ref` SHOULD include `tool_id`, `name`, `namespace`, `search_hint`, `source`, `schema_visibility`, `loading_state`, `reason`, `pending_provider_or_server`, and `selection_ref`.
+
+Tool search SHOULD support at least:
+
+- exact selection by tool name.
+- keyword search over name, namespace, description, and search hints.
+- pending provider/server reporting.
+- no-match results that are still machine-readable.
+- schema-not-sent errors that tell the caller to discover the tool first.
 
 ## Progress and cancellation
 
-Tools that take noticeable time SHOULD emit progress updates. A `tool_progress` record SHOULD include `progress_id`, `invocation_id`, `sequence`, `status`, `message`, `percent`, `current_step`, `total_steps`, `partial_result_refs`, `artifact_refs`, and `timestamp`.
+Tools that take noticeable time SHOULD emit progress updates. A `tool_progress` record SHOULD include `progress_id`, `invocation_id`, `sequence`, `status`, `message`, `percent`, `current_step`, `total_steps`, `elapsed_ms`, `bytes_read`, `bytes_written`, `line_count`, `partial_result_refs`, `artifact_refs`, and `timestamp` when known.
 
 Cancellation SHOULD be explicit. If cancellation is unsupported, the execution profile must say so. A cancellation request should still create an event so UI, runtime, evidence, and policy systems can explain what happened.
 
@@ -182,24 +295,39 @@ A `tool_result` SHOULD include:
 - `result_id`
 - `invocation_id`
 - `status`
+- `is_error`
 - `content`
 - `structured_content`
+- `model_facing_content`
+- `ui_facing_summary`
 - `resource_refs`
 - `artifact_refs`
 - `evidence_refs`
 - `policy_refs`
 - `telemetry_refs`
+- `persistence_refs`
 - `summary`
 - `redaction_state`
 - `created_at`
 
-Result content may include text, structured JSON, images, audio, video, files, resource links, embedded resources, logs, diffs, or artifact refs. Large or private payloads SHOULD be referenced, not embedded.
+Result content may include text, structured JSON, images, audio, video, files, resource links, embedded resources, logs, diffs, persisted output refs, or artifact refs. Large or private payloads SHOULD be referenced, not embedded.
 
-## Permission profile
+Denied permission, rejected approval, schema validation failure, missing tool, sibling cancellation, and streaming fallback SHOULD still produce terminal tool results so the conversation, evidence, and UI can explain what happened.
 
-A `tool_permission_profile` describes the risk and access requirements of a tool. It SHOULD include `risk_level`, `access_kinds`, `write_effects`, `network_scope`, `credential_refs`, `sandbox_profile`, `approval_required`, `approval_reason`, `data_sensitivity`, `retention_hint`, `redaction_required`, and `policy_refs`.
+## Result persistence and rendering
 
-The permission profile is not the decision. Agent Policy owns the decision. Agent Tool only provides the facts a policy engine or human reviewer needs.
+A tool result may have multiple representations:
+
+| Representation | Consumer |
+| --- | --- |
+| `model_facing_content` | Model or agent loop. May be compacted, previewed, or reference-based. |
+| `ui_facing_rendering` | User interface projection, including progress, rejection, grouped results, and expanded views. |
+| `transcript_search_text` | Text intentionally visible in transcript search. |
+| `persisted_payload_ref` | Durable or session-scoped bytes for large outputs. |
+| `artifact_refs` | Durable deliverables owned by Agent Artifact. |
+| `resource_refs` | Fetchable resources owned by native protocols or resource systems. |
+
+Implementations SHOULD avoid circular result loops. For example, a file-read result may opt out of persistence if persisting the result would create another file for the same read tool to read back indefinitely.
 
 ## Errors and retries
 
@@ -210,9 +338,11 @@ Initial error classes:
 - `unknown_tool`
 - `invalid_arguments`
 - `schema_validation_failed`
+- `schema_not_loaded`
 - `permission_denied`
 - `approval_rejected`
 - `policy_blocked`
+- `hook_blocked`
 - `capability_gap`
 - `setup_required`
 - `credential_missing`
@@ -224,6 +354,8 @@ Initial error classes:
 - `partial_failure`
 - `result_too_large`
 - `result_redacted`
+- `sibling_canceled`
+- `streaming_fallback_discarded`
 - `canceled`
 
 ## External mappings
@@ -232,12 +364,13 @@ Agent Tool SHOULD preserve native protocol ids instead of replacing them. Exampl
 
 | Native source | Mapping fields |
 | --- | --- |
-| MCP | `server_id`, `mcp_session_id`, `mcp_protocol_version`, `method`, `tool_name`, `jsonrpc_request_id`. |
+| MCP | `server_id`, `mcp_session_id`, `mcp_protocol_version`, `method`, `tool_name`, `jsonrpc_request_id`, `structuredContent`, `isError`, `_meta`. |
 | OpenAPI | `operation_id`, `method`, `path`, `server_url`, `security_scheme_refs`. |
-| OpenAI-style function calling | `tool_call_id`, `function_name`, `tool_choice`, `parallel_tool_calls`, `strict`. |
-| A2A | `agent_card_url`, `agent_skill_id`, `task_id`, `context_id`, `artifact_id`. |
-| CLI | `command_id`, `argv_ref`, `cwd_ref`, `env_policy_ref`, `exit_code`. |
-| Browser | `browser_session_id`, `page_id`, `action_id`, `observation_ref`. |
+| Function calling APIs | `tool_call_id`, `function_name`, `tool_choice`, `parallel_tool_calls`, `strict`, `defer_loading`. |
+| A2A | `agent_card_url`, `agent_skill_id`, `task_id`, `context_id`, `message_id`, `artifact_id`. |
+| CLI | `command_id`, `argv_ref`, `cwd_ref`, `env_policy_ref`, `exit_code`, `signal`, `sandbox_ref`. |
+| Browser | `browser_session_id`, `page_id`, `action_id`, `observation_ref`, `screenshot_ref`. |
+| Telemetry | `trace_id`, `span_id`, `tool_name`, `tool_call_id`, `request_id`, `duration_ms`, `result_size_bytes`. |
 
 ## Event classes
 
@@ -246,14 +379,24 @@ Compatible implementations SHOULD emit or export these event classes:
 - `tool.declared`
 - `tool.surface.created`
 - `tool.surface.updated`
+- `tool.deferred.discovered`
+- `tool.deferred.loaded`
 - `tool.invocation.planned`
 - `tool.invocation.selected`
 - `tool.invocation.arguments_ready`
-- `tool.invocation.approval_requested`
-- `tool.invocation.approved`
+- `tool.invocation.validation_failed`
+- `tool.hook.pre.started`
+- `tool.hook.pre.completed`
+- `tool.permission.requested`
+- `tool.permission.decided`
+- `tool.invocation.queued`
 - `tool.invocation.started`
 - `tool.invocation.progress`
 - `tool.invocation.partial_result`
+- `tool.hook.post.started`
+- `tool.hook.post.completed`
+- `tool.result.persisted`
+- `tool.invocation.yielded`
 - `tool.invocation.succeeded`
 - `tool.invocation.failed`
 - `tool.invocation.canceled`
@@ -263,92 +406,167 @@ Compatible implementations SHOULD emit or export these event classes:
 
 ## Fail-safe guidance
 
-If a tool result is too large, private, expired, or redacted, consumers should preserve the invocation envelope, status, error or redaction reason, resource/artifact refs, and audit refs. Missing payload bytes should not erase the fact that the tool was selected and executed.
+If a tool result is too large, private, expired, redacted, discarded, or canceled by a sibling failure, consumers should preserve the invocation envelope, status, error or redaction reason, resource/artifact refs, policy/evidence refs, and audit refs. Missing payload bytes should not erase the fact that the tool was selected and executed.
 
 ## Version compatibility
 
-Version `0.1.0` is a draft. Implementations SHOULD include `schema_version: "0.1.0"` and tolerate unknown fields. Producers SHOULD preserve identity fields and add optional fields rather than changing tool identity or lifecycle semantics.
+Version `0.2.0` is a draft. Implementations SHOULD include `schema_version: "0.2.0"` and tolerate unknown fields. Producers SHOULD preserve identity fields and add optional fields rather than changing tool identity, lifecycle semantics, native mappings, or result interpretation.
 
 
 
-# Tool model
+# Tool Model
 Source: https://limecloud.github.io/agenttool/en/concepts/tool-model
 
 # Tool Model
 
-Agent Tool separates five ideas that are often collapsed into one word.
+Agent Tool separates ideas that are often collapsed into one word.
 
 | Layer | Question | Examples |
 | --- | --- | --- |
 | Declaration | What can be called? | `get_weather`, `read_file`, `browser.click`, `generate_image`. |
-| Surface | Which declarations are visible now? | Turn tools, task tools, skill-activated tools, tenant-limited tools. |
+| Interface | How does this tool validate, authorize, execute, stream, render, and persist? | strict schema, read-only classifier, progress mapper, result mapper. |
+| Surface | Which declarations are visible now? | Turn tools, task tools, skill-activated tools, tenant-limited tools, deferred tools. |
 | Invocation | What did the agent request? | Arguments, actor, policy refs, native call id, status. |
+| Permission decision | Was this call allowed, denied, asked, or delegated? | Rule decision, classifier decision, human approval, passthrough. |
+| Scheduling | When and with what concurrency can it run? | Parallel reads, exclusive writes, interrupt behavior, sibling failure policy. |
 | Execution | How was it run? | MCP server, local native command, browser executor, API adapter, model task. |
 | Result | What came back? | Text, structured JSON, resource refs, artifact refs, errors, telemetry refs. |
+| Persistence/rendering | How is output shown and stored? | Inline result, persisted preview, UI card, transcript search text. |
 
 A portable implementation should preserve these layers even when a provider exposes them as a single object.
 
 ## Identity
 
-Use stable `tool_id` for the portable declaration and preserve native ids in `external_mappings`. Do not rename an MCP tool, OpenAPI operation, browser action, or provider function in a way that loses its original identity.
+Use stable `tool_id` for the portable declaration and preserve native ids in `external_mappings`. Do not rename an MCP tool, OpenAPI operation, browser action, provider function, CLI command, or A2A task/artifact in a way that loses its original identity.
 
 ## Selection
 
-Selection is context-specific. A tool may exist in a catalog but be absent from a surface because policy blocked it, setup is missing, the model lacks required capability, or the current task should not see it.
+Selection is context-specific. A tool may exist in a catalog but be absent from a surface because policy blocked it, setup is missing, the model lacks required capability, the current task should not see it, or the tool is deferred until discovered.
+
+## Input boundary
+
+Do not treat tool input as a single mutable object. Keep model-provided arguments separate from observable, permission, and final call input.
 
 ## Results
 
-A tool result may be final, partial, redacted, too large, or converted into a durable artifact. The result envelope should explain which case occurred instead of hiding it behind plain text.
+A tool result may be final, partial, denied, rejected, redacted, too large, synthetic, or converted into a durable artifact. The result envelope should explain which case occurred instead of hiding it behind plain text.
 
 
 
-# Tool declaration
+# Tool Declaration
 Source: https://limecloud.github.io/agenttool/en/contracts/tool-declaration
 
 # Tool Declaration
 
-A `tool_declaration` is the portable description of one callable capability. It should be compact enough for discovery and rich enough for validation.
+A `tool_declaration` is the portable description of one callable capability. It should be compact enough for discovery and rich enough for validation and safety classification.
 
 ## Required shape
 
 ```json
 {
-  "schema_version": "0.1.0",
+  "schema_version": "0.2.0",
   "tool_id": "tool_web_search",
   "namespace": "web",
   "name": "search",
+  "aliases": ["web_search"],
+  "search_hint": "current public web information",
   "title": "Web Search",
   "description": "Search the web for current public information and return source refs.",
   "lifecycle": "available",
   "tool_kind": "web_search",
   "capability_refs": ["web_search"],
   "input_contract": {
-    "schema": {
+    "strict": true,
+    "model_input_schema": {
       "type": "object",
       "properties": { "query": { "type": "string" } },
-      "required": ["query"]
+      "required": ["query"],
+      "additionalProperties": false
     }
-  }
+  },
+  "interface_ref": "tool_interface:web.search",
+  "execution_profile_ref": "execution_profile:web.search",
+  "permission_profile_ref": "permission_profile:web.search"
 }
 ```
 
 ## Guidance
 
 - `description` is model-facing. Explain when to use the tool and when not to use it.
+- `name` is the primary model-callable name; `aliases` are compatibility names.
 - `namespace` prevents collision between tools with similar names.
+- `search_hint` helps deferred loading and keyword discovery.
 - `capability_refs` should describe underlying capability, not the product entry point.
 - `annotations` are hints. Consumers should treat them as untrusted unless the producer is trusted.
+- Preserve native ids in `external_mappings`; do not rename away MCP tool names, OpenAPI operation ids, provider function names, CLI commands, browser action ids, or A2A task/artifact ids.
 
 
 
-# Tool surface
+# Tool Interface
+Source: https://limecloud.github.io/agenttool/en/contracts/tool-interface
+
+# Tool Interface
+
+A `tool_interface` describes how a declared tool behaves at runtime. It is deeper than a function signature: it tells an agent runtime how to validate, authorize, execute, stream, render, persist, and audit a tool call.
+
+## Required partitions
+
+| Partition | Fields |
+| --- | --- |
+| Identity | `tool_id`, `name`, `aliases`, `namespace`, `native_ids`, `user_facing_name`. |
+| Discovery | `search_hint`, `description`, `capability_refs`, `schema_visibility`, `should_defer`, `always_load`. |
+| Schemas | `model_input_schema`, `runtime_input_schema`, `output_schema`, `strict`. |
+| Availability | `is_enabled`, `requires_setup`, `required_credentials`, `model_requirements`, `feature_gate_refs`. |
+| Validation | `schema_validation`, `value_validation`, `io_preflight_validation`, `deny_before_io`. |
+| Safety | `is_read_only`, `is_destructive`, `is_open_world`, `requires_user_interaction`, `sandbox_profile`, `classifier_input`. |
+| Permission | `permission_profile_ref`, `permission_matcher`, `permission_channel`, `decision_ref`. |
+| Execution | `execution_profile_ref`, `timeout_ms`, `abort_semantics`, `progress_schema`, `context_modifier_policy`. |
+| Result | `result_mapper`, `max_inline_chars`, `persistence_policy_ref`, `empty_result_policy`, `redaction_policy_refs`. |
+| Rendering | `ui_summary`, `activity_description`, `progress_render_hint`, `rejected_render_hint`, `error_render_hint`, `transcript_search_text`. |
+
+## Fail-closed defaults
+
+If an implementation supplies defaults, they SHOULD be conservative:
+
+| Missing field | Safe default |
+| --- | --- |
+| `is_concurrency_safe` | `false` |
+| `is_read_only` | `false` |
+| `is_destructive` | `false` unless explicitly detected |
+| `is_open_world` | `true` for network/browser/shell unless scoped otherwise |
+| `requires_user_interaction` | `false` |
+| `strict` | `true` for structured model-facing tools when provider supports it |
+| `interrupt_behavior` | `block` |
+| `classifier_input` | empty string; security-relevant tools must override |
+
+A runtime MAY choose permissive defaults for internal trusted tools, but exported Agent Tool records should still say which facts were inferred.
+
+## Model schema vs runtime schema
+
+Model-facing schemas SHOULD include only fields the model may produce. Runtime schemas MAY include internal fields inserted by hooks, permission prompts, migration layers, or adapters. Internal-only fields MUST be marked with `visibility: "internal"` and a `mutation_source` when used.
+
+## Rendering boundary
+
+A tool interface may provide UI hints, but Agent Tool does not define the UI component. Keep these separate:
+
+- model-facing result serialization.
+- UI-facing progress or result projection.
+- transcript/search text.
+- persisted payload preview.
+- artifact or resource refs.
+
+This separation prevents a large result wrapper, UI-only label, or collapsed view from becoming the canonical tool output.
+
+
+
+# Tool Surface
 Source: https://limecloud.github.io/agenttool/en/contracts/tool-surface
 
 # Tool Surface
 
 A `tool_surface` is the set of tools visible in a context. It is not the global catalog.
 
-Surfaces can be scoped to `turn`, `task`, `session`, `tenant`, `skill`, `peer_agent`, or `workspace`.
+Surfaces can be scoped to `turn`, `task`, `session`, `tenant`, `skill`, `peer_agent`, `workspace`, `role`, or `model_request`.
 
 ## Fields
 
@@ -357,17 +575,33 @@ Surfaces can be scoped to `turn`, `task`, `session`, `tenant`, `skill`, `peer_ag
 | `surface_id` | Stable id for the surfaced set. |
 | `scope` | Context in which the surface applies. |
 | `tool_refs` | Tools that can be considered. |
-| `deferred_tools` | Discoverable but not loaded tools. |
+| `loaded_tools` | Tools whose schemas are visible now. |
+| `deferred_tools` | Discoverable but not fully loaded tools. |
 | `blocked_tools` | Tools hidden with machine-readable reasons. |
+| `excluded_tools` | Tools removed by role, recursion, feature, model, or policy filters. |
 | `selection_policy` | How the model or runtime may select tools. |
 | `default_tool_choice` | `auto`, `none`, `required`, or tool-specific hint. |
+| `role_constraints` | Agent type, coordinator mode, background worker, or human role constraints. |
+| `model_capabilities` | Provider support for strict schemas, parallel calls, deferred refs, media, etc. |
 | `policy_refs` | Adjacent policy decisions or constraints. |
+| `runtime_refs` | Runtime, session, task, or sandbox refs. |
 
-A surface should be regenerated when policy, credentials, workspace, active skill, peer agent, or model capability changes.
+A surface should be regenerated when policy, credentials, workspace, active skill, peer agent, model capability, feature gates, or runtime mode changes.
+
+## Filtering
+
+Surface filters SHOULD record reasons. Examples:
+
+- recursive agent tool blocked inside subagents.
+- human-interaction tool blocked in non-interactive mode.
+- write tool blocked by permission mode.
+- MCP tool deferred until discovered.
+- browser tool excluded because no browser session exists.
+- shell tool excluded by sandbox or platform policy.
 
 
 
-# Input and output contracts
+# Input Output Contracts
 Source: https://limecloud.github.io/agenttool/en/contracts/input-output-contracts
 
 # Input and Output Contracts
@@ -378,11 +612,19 @@ Input and output contracts are validation and interpretation hints. They do not 
 
 `tool_input_contract` SHOULD include:
 
-- JSON Schema-compatible `schema`.
+- JSON Schema-compatible `model_input_schema`.
+- Optional `runtime_input_schema` for internal fields.
+- `strict` when the provider/runtime can enforce schemas.
 - `defaults` where safe.
 - `examples` for model grounding.
 - `sensitive_fields` for redaction and telemetry controls.
+- `internal_only_fields` that must not be model-generated.
 - `argument_mode`: `json`, `text`, `file`, `multipart`, `stream`, or `custom`.
+- `mutation_policy`: whether hooks or permission prompts may replace input.
+
+## Input variants
+
+Keep these separate: `model_input`, `observable_input`, `permission_input`, and `call_input`. This prevents path normalization, permission UI edits, or internal fields from corrupting the original model-provided arguments.
 
 ## Output contract
 
@@ -391,14 +633,16 @@ Input and output contracts are validation and interpretation hints. They do not 
 - `structured_schema` for structured content.
 - `content_types` for text, image, audio, video, file, log, or resource refs.
 - `artifact_expectations` when the tool should produce a durable deliverable.
-- `max_inline_bytes` to prevent giant payloads entering prompts.
+- `max_inline_bytes` or `max_inline_chars` to prevent giant payloads entering prompts.
+- `persistence_policy_ref` for preview, persist, redaction, and never-persist rules.
+- `rendering_boundary` to separate model content, UI rendering, and transcript search text.
 - `redaction_rules` and `fallback_summary` guidance.
 
 If a native protocol already has schemas, Agent Tool should reference them and add agent-specific interpretation rather than copying everything.
 
 
 
-# Execution profile
+# Execution Profile
 Source: https://limecloud.github.io/agenttool/en/contracts/execution-profile
 
 # Execution Profile
@@ -426,19 +670,123 @@ Profiles SHOULD state support for:
 
 - streaming progress
 - cancellation
+- timeout
 - resume
 - retries
 - partial results
+- background tasks
+- result persistence
 - artifacts
 - sandboxing
 - credential delegation
 - offline execution
+- context modifiers
 
 If a capability is unsupported, say so explicitly. Silent fallback creates unsafe agent behavior.
 
+## Shell and local process profiles
+
+Shell-like tools SHOULD declare command parsing strategy, working directory policy, environment policy, sandbox profile, background execution support, timeout behavior, exit-code interpretation, and classifier input.
+
+## Remote profiles
+
+Remote tools SHOULD preserve native request ids, session ids, protocol versions, server names, retry semantics, and protocol-level error distinctions.
 
 
-# Permission profile
+
+# Tool Execution Pipeline
+Source: https://limecloud.github.io/agenttool/en/contracts/tool-execution-pipeline
+
+# Tool Execution Pipeline
+
+A tool call should be explainable even when it fails before execution. Agent Tool therefore models the pipeline as a sequence of facts, not a single `call()` function.
+
+## Phases
+
+| Phase | Purpose | Terminal failures |
+| --- | --- | --- |
+| `resolve_tool` | Find a declaration by name or alias inside the current surface. | `unknown_tool`, `blocked_tool`, `schema_not_loaded`. |
+| `parse_schema` | Validate `model_input` against the model-facing schema. | `schema_validation_failed`. |
+| `validate_values` | Run tool-specific value and IO preflight checks. | `invalid_arguments`, `setup_required`, `sandbox_violation`. |
+| `prepare_observable_input` | Build a normalized copy for hooks, permission UI, SDK streams, and transcripts. | `input_mutation_failed`. |
+| `pre_hooks` | Let hooks add context, progress, updated input, stop requests, or permission results. | `hook_blocked`, `hook_failed`. |
+| `permission` | Resolve allow/ask/deny/passthrough through policy, rules, classifiers, or human approval. | `permission_denied`, `approval_rejected`, `policy_blocked`. |
+| `schedule` | Queue or run according to concurrency and ordering policy. | `canceled`, `sibling_canceled`. |
+| `execute` | Call the native executor with timeout, abort signal, sandbox, credentials, and progress callback. | `execution_failed`, `timeout`, `dependency_unavailable`. |
+| `map_result` | Convert native output into the model-facing result envelope. | `result_mapping_failed`. |
+| `post_hooks` | Let hooks enrich context, emit audit messages, or update protocol-specific outputs. | `post_hook_failed`, `hook_blocked`. |
+| `persist_result` | Inline, preview, persist, redact, or link result bytes. | `result_too_large`, `result_redacted`. |
+| `emit_terminal` | Emit terminal result and events. | none; even errors should be represented. |
+
+## Normal failures are results
+
+Permission denial, user rejection, schema validation failure, missing tool, streaming fallback, and sibling cancellation SHOULD become terminal `tool_result` records with `is_error: true`. They should not disappear as exceptions that only the runtime can see.
+
+## Result mapping once
+
+Map a native result into a model-facing result exactly once before generic persistence. If a protocol-specific post hook owns output mutation, record that mutation and remap after the hook. Avoid repeatedly serializing the same output differently across retries or resume.
+
+## Context modifiers
+
+A tool MAY return a context modifier. The scheduler must say whether context modifiers are honored for concurrent tools. If a runtime cannot safely merge concurrent context changes, it SHOULD reject or defer those modifiers rather than apply them nondeterministically.
+
+
+
+# Hooks And Input Mutation
+Source: https://limecloud.github.io/agenttool/en/contracts/hooks-and-input-mutation
+
+# Hooks and Input Mutation
+
+Hooks are lifecycle extension points around a tool call. They are powerful because they can add context, block execution, change permission behavior, or rewrite inputs. Agent Tool makes those effects explicit.
+
+## Hook events
+
+Initial hook event kinds:
+
+- `pre_tool_use`
+- `post_tool_use`
+- `post_tool_use_failure`
+- `permission_request`
+- `permission_decision`
+- `result_persistence`
+
+## Hook outputs
+
+A hook MAY emit:
+
+| Output | Meaning |
+| --- | --- |
+| `message` | Additional user-visible or runtime-visible message. |
+| `progress` | Ordered progress emitted before or after native execution. |
+| `updated_input` | Replacement input for permission or execution. |
+| `permission_result` | Allow, ask, deny, or passthrough hint for the permission resolver. |
+| `additional_context` | Context to append to the conversation or invocation record. |
+| `stop` | Stop continuation and produce a terminal tool result. |
+| `updated_output` | Protocol-specific output update, typically for remote tools. |
+
+## Mutation rule
+
+Never mutate `model_input` in place. Hooks that need normalized paths, expanded URLs, parsed commands, or internal fields should operate on `observable_input` or produce a fresh `updated_input`.
+
+Every input mutation SHOULD record:
+
+- `mutation_id`
+- `invocation_id`
+- `source_type`: `hook`, `permission_prompt`, `adapter`, `migration`, or `runtime`
+- `source_ref`
+- `from_input_ref`
+- `to_input_ref`
+- `changed_fields`
+- `reason`
+- `created_at`
+
+## Permission hook invariant
+
+A hook `allow` should not automatically bypass higher-priority deny or ask rules. A compatible runtime SHOULD still resolve rule-based, policy-based, or human-interaction constraints after hook decisions unless a trusted policy explicitly says the hook is authoritative.
+
+
+
+# Permission Profile
 Source: https://limecloud.github.io/agenttool/en/contracts/permission-profile
 
 # Permission Profile
@@ -453,13 +801,73 @@ It SHOULD describe:
 - network scope and tenant scope.
 - sandbox profile and credential refs.
 - whether approval is required.
+- whether permission prompts can be avoided in non-interactive mode.
+- rule matching fields such as path, command, URL, native operation id, or resource id.
 - redaction and retention hints.
 
-Agent Policy owns allow/deny/ask/defer/escalate. Agent Tool owns the tool facts that make that decision explainable.
+Agent Policy owns allow/deny/ask/defer/escalate. Agent Tool owns the tool facts and the per-invocation decision record that make that decision explainable.
+
+See [Permission decision](./permission-decision.md) for the concrete decision object.
 
 
 
-# Invocation lifecycle
+# Permission Decision
+Source: https://limecloud.github.io/agenttool/en/contracts/permission-decision
+
+# Permission Decision
+
+A permission profile describes risk facts. A permission decision records what actually happened for one invocation.
+
+## Behaviors
+
+| Behavior | Meaning |
+| --- | --- |
+| `allow` | The call may proceed. May include `updated_input` and feedback. |
+| `ask` | The runtime must ask a user, coordinator, policy tool, or external authority. |
+| `deny` | The call must not execute. Produce a terminal error result. |
+| `passthrough` | The tool delegates final permission resolution to another policy layer. |
+
+## Decision reasons
+
+Initial `reason.type` values:
+
+- `rule`
+- `mode`
+- `policy`
+- `hook`
+- `classifier`
+- `working_dir`
+- `sandbox_override`
+- `safety_check`
+- `permission_prompt_tool`
+- `async_agent`
+- `subcommand_results`
+- `other`
+
+## Rule sources
+
+Permission rules SHOULD preserve origin:
+
+- `user_settings`
+- `project_settings`
+- `local_settings`
+- `flag_settings`
+- `policy_settings`
+- `cli_arg`
+- `command`
+- `session`
+
+## Suggested updates
+
+An `ask` decision MAY include suggested updates such as adding allow/deny/ask rules, replacing rules, changing permission mode, or adding/removing scoped working directories. Suggested updates are not decisions until accepted by the authority that owns policy state.
+
+## Classifier state
+
+Automated safety classifiers SHOULD be represented as decision inputs, not hidden side effects. Record `pending_classifier_check`, `classifier_ref`, `confidence`, `classifier_reason`, and whether the classifier can approve, deny, or only recommend.
+
+
+
+# Invocation Lifecycle
 Source: https://limecloud.github.io/agenttool/en/contracts/invocation-lifecycle
 
 # Invocation Lifecycle
@@ -468,48 +876,176 @@ A `tool_invocation` records one requested or executed call.
 
 ## Required refs
 
+- `schema_version`
 - `invocation_id`
 - `tool_id`
-- `surface_id` when available
-- `actor_ref`
-- `runtime_refs`
-- `arguments` or `arguments_ref`
 - `status`
 - `created_at`
 
 ## Recommended refs
 
+- `surface_id`
 - `native_call_id`
+- `model_input_ref` or `model_input`
+- `observable_input_ref`
+- `permission_input_ref`
+- `call_input_ref`
+- `actor_ref`
+- `runtime_refs`
 - `policy_refs`
+- `permission_decision_refs`
+- `hook_refs`
 - `evidence_refs`
 - `telemetry_refs`
 - `artifact_refs`
 - `approval_request_ref`
+- `scheduler_policy_ref`
 
-Invocations should remain visible even if the result is redacted or the payload expires.
+Invocations should remain visible even if the result is redacted, the payload expires, the call is denied before execution, or the tool is canceled by a sibling failure.
+
+## Status transitions
+
+A runtime SHOULD preserve status transitions with timestamps. Useful states include `planned`, `selected`, `arguments_ready`, `pre_hooks_running`, `awaiting_approval`, `approved`, `denied`, `queued`, `running`, `partial_result`, `post_hooks_running`, `yielded`, `succeeded`, `failed`, `canceled`, `timed_out`, and `blocked`.
 
 
 
-# Progress and cancellation
+# Concurrency And Scheduling
+Source: https://limecloud.github.io/agenttool/en/contracts/concurrency-and-scheduling
+
+# Concurrency and Scheduling
+
+Agent Tool does not own the global runtime scheduler, but tool records must say enough for a scheduler to run calls safely.
+
+## Per-call classification
+
+Concurrency safety is input-dependent. A shell command that only reads files can be safe, while the same shell tool running a write command is not. A file read is usually safe, but may be unsafe if it updates shared context or blocks on exclusive resources.
+
+Record these facts per invocation:
+
+- `is_concurrency_safe`
+- `is_read_only`
+- `is_destructive`
+- `is_open_world`
+- `requires_exclusive_context`
+- `context_modifier_policy`
+- `resource_locks`
+
+## Queue states
+
+Initial scheduler states:
+
+- `queued`
+- `executing`
+- `completed`
+- `yielded`
+- `discarded`
+
+Progress may be yielded immediately. Terminal results SHOULD preserve model-visible ordering unless the surface explicitly allows unordered results.
+
+## Interrupt behavior
+
+A tool declares one of:
+
+- `cancel`: stop the tool and emit a canceled or synthetic error result.
+- `block`: keep the tool running and block the next user turn or dependent tool.
+
+If omitted, use `block`.
+
+## Sibling failure
+
+When multiple tools run together, one failure may or may not cancel siblings. `sibling_failure_policy` values:
+
+- `ignore`: sibling failures do not affect this invocation.
+- `cancel_siblings`: a failure cancels other in-flight tools in the batch.
+- `cancel_dependent`: only calls that depend on the failed invocation are canceled.
+
+A canceled sibling SHOULD receive a synthetic result with `abort_reason`, not disappear.
+
+
+
+# Deferred Loading And Tool Search
+Source: https://limecloud.github.io/agenttool/en/contracts/deferred-loading-and-tool-search
+
+# Deferred Loading and Tool Search
+
+Large tool catalogs should not force every schema into the prompt. Agent Tool treats discovery and loading as first-class surface mechanics.
+
+## Loading states
+
+| State | Meaning |
+| --- | --- |
+| `loaded` | Full schema and prompt description are available to the model or caller. |
+| `deferred` | Tool is known by name or hint, but full schema is not loaded. |
+| `discoverable` | Tool can appear in search results. |
+| `pending_provider` | Backing server, plugin, peer agent, or provider is still connecting. |
+| `unavailable` | Tool cannot be loaded in this context. |
+
+## Deferred ref
+
+A `deferred_tool_ref` SHOULD include:
+
+- `tool_id`
+- `name`
+- `namespace`
+- `search_hint`
+- `source`
+- `schema_visibility`
+- `loading_state`
+- `reason`
+- `pending_provider_or_server`
+- `selection_ref`
+- `native_ref`
+
+## Search result
+
+A `tool_search_result` SHOULD include `query`, `query_type`, `matches`, `total_deferred_tools`, `pending_providers`, `missing_names`, and `next_action`.
+
+Exact selection and keyword search SHOULD both be supported. Exact selection reduces retry churn when the caller already knows a tool name. Keyword search helps models discover remote tools without loading all schemas.
+
+## Schema-not-loaded error
+
+If a model calls a deferred tool before loading its schema, return a structured `schema_not_loaded` error with a hint to discover or select the tool first. Do not execute a call whose schema was not visible and validated.
+
+
+
+# Progress And Cancellation
 Source: https://limecloud.github.io/agenttool/en/contracts/progress-and-cancellation
 
 # Progress and Cancellation
 
-Long-running tools need ordered progress that can survive UI reconnects.
+Long-running tools need ordered progress that can survive UI reconnects and runtime replay.
 
-A progress record SHOULD include sequence, status, message, percent, current step, total steps, partial result refs, artifact refs, and timestamp.
+A progress record SHOULD include sequence, status, message, percent, current step, total steps, elapsed time, byte or line counters, partial result refs, artifact refs, and timestamp.
 
-Cancellation has three separate facts:
+## Progress classes
+
+Initial `status` values:
+
+- `queued`
+- `started`
+- `running`
+- `waiting_for_permission`
+- `waiting_for_input`
+- `backgrounded`
+- `partial_result`
+- `completed`
+- `failed`
+- `canceled`
+
+## Cancellation facts
+
+Cancellation has separate facts:
 
 1. `cancel_requested` - a caller asked to cancel.
 2. `cancel_acknowledged` - the executor acknowledged the request.
-3. `canceled` or `cancel_failed` - the execution reached a terminal outcome.
+3. `abort_reason` - user interruption, sibling error, timeout, fallback, or runtime shutdown.
+4. `canceled` or `cancel_failed` - the execution reached a terminal outcome.
 
 Do not imply cancellation support from a button in UI. The execution profile must declare it.
 
 
 
-# Result envelope
+# Result Envelope
 Source: https://limecloud.github.io/agenttool/en/contracts/result-envelope
 
 # Result Envelope
@@ -529,17 +1065,65 @@ A `tool_result` is the portable result of an invocation. It may contain inline c
 - `log`
 - `diff`
 - `artifact_ref`
+- `persisted_output_ref`
 - `handoff_ref`
 
-Large, sensitive, or mutable outputs should be represented by refs with digests, access hints, and redaction state.
+Large, sensitive, mutable, or replay-hostile outputs should be represented by refs with digests, access hints, and redaction state.
 
 ## Result status
 
-Use `succeeded`, `partial_succeeded`, `failed`, `redacted`, `too_large`, `canceled`, or `timed_out`.
+Use `succeeded`, `partial_succeeded`, `failed`, `denied`, `rejected`, `redacted`, `too_large`, `canceled`, `timed_out`, `synthetic_error`, or `discarded`.
+
+## Error results
+
+Denied permissions, rejected approvals, missing tools, schema failures, sibling cancellations, and fallback discards should still produce result envelopes. The result should say `is_error: true`, include `error_class`, and preserve the original `invocation_id`.
 
 
 
-# Resource and artifact refs
+# Result Persistence And Rendering
+Source: https://limecloud.github.io/agenttool/en/contracts/result-persistence-and-rendering
+
+# Result Persistence and Rendering
+
+Tool output is consumed by models, users, transcripts, evidence systems, artifact stores, and telemetry. These consumers need different representations.
+
+## Representations
+
+| Representation | Requirement |
+| --- | --- |
+| `native_output` | Preserve native protocol output or reference it. |
+| `model_facing_content` | What the model receives. May be compacted, redacted, previewed, or reference-based. |
+| `structured_content` | Machine-readable result conforming to `output_schema` when available. |
+| `ui_facing_rendering` | UI projection hints; not canonical output. |
+| `transcript_search_text` | Text intentionally indexed for transcript search. |
+| `persisted_payload_ref` | Durable or session-scoped bytes for large outputs. |
+| `artifact_refs` | Durable deliverables owned by Agent Artifact. |
+| `resource_refs` | Fetchable resources owned by native protocols or resource systems. |
+
+## Persistence decision
+
+A `tool_result_persistence` SHOULD include `decision_id`, `invocation_id`, `result_id`, `strategy`, `threshold`, `original_size_bytes`, `preview_size_bytes`, `persisted_ref`, `redaction_state`, `reason`, and `created_at`.
+
+Initial strategies:
+
+- `inline`
+- `preview_and_persist`
+- `ref_only`
+- `redact`
+- `drop_with_reason`
+- `never_persist`
+
+## Empty output
+
+Tools can legitimately complete with no native output. A compatible runtime SHOULD emit an explicit empty-result marker or structured status so models and UIs do not confuse empty output with missing output.
+
+## Circular result guard
+
+Some tools should opt out of persistence. A read-file tool, for example, may self-bound by ranges or token limits. Persisting its output into another file can create a read-persist-read loop.
+
+
+
+# Resource And Artifact Refs
 Source: https://limecloud.github.io/agenttool/en/contracts/resource-and-artifact-refs
 
 # Resource and Artifact Refs
@@ -554,7 +1138,7 @@ Refs SHOULD include ids, URI or native ref, media type, digest when available, a
 
 
 
-# Errors and retries
+# Errors And Retries
 Source: https://limecloud.github.io/agenttool/en/contracts/errors-and-retries
 
 # Errors and Retries
@@ -564,16 +1148,22 @@ Tool errors should be machine-readable and user-explainable.
 Separate these cases:
 
 - the tool does not exist.
-- arguments failed validation.
+- the tool exists but is not surfaced.
+- the tool is deferred and its schema was not loaded.
+- arguments failed schema validation.
+- values failed tool-specific validation.
+- a hook blocked or failed.
 - policy blocked the call.
 - a human rejected approval.
 - setup or credentials are missing.
+- a sandbox was violated.
 - execution failed inside the tool.
 - a dependency or network failed.
-- the result is too large or redacted.
+- a sibling failure canceled this call.
+- the result is too large, redacted, or not persistable.
 - the call timed out or was canceled.
 
-Retry guidance should include whether retry is safe, whether arguments must change, whether approval is needed again, and any `retry_after` hint.
+Retry guidance should include whether retry is safe, whether arguments must change, whether discovery must happen first, whether approval is needed again, whether a sibling failure caused the error, and any `retry_after` hint.
 
 
 
@@ -586,7 +1176,7 @@ Agent Tool is a normalization and linking layer. It should not swallow the nativ
 
 ## MCP
 
-Preserve `tools/list`, `tools/call`, tool `name`, `inputSchema`, `outputSchema`, `structuredContent`, `content`, `isError`, and content block refs. Add Agent Tool ids and policy/evidence/runtime refs around them.
+Preserve `tools/list`, `tools/call`, tool `name`, `title`, `description`, `inputSchema`, `outputSchema`, `annotations`, `structuredContent`, `content`, `isError`, `_meta`, `resource_link`, and embedded resources. Add Agent Tool ids and policy/evidence/runtime refs around them.
 
 ## OpenAPI
 
@@ -594,229 +1184,330 @@ Preserve `operationId`, method, path, server, security schemes, request schemas,
 
 ## Function calling APIs
 
-Preserve provider `tool_call_id`, function name, tool choice, strictness, and parallel-call semantics. Add portable invocation ids and policy/evidence refs.
+Preserve provider `tool_call_id`, function name, tool choice, strictness, deferred loading flags, and parallel-call semantics. Add portable invocation ids and policy/evidence refs.
 
 ## A2A
 
 Preserve Agent Card, AgentSkill id, task id, context id, message id, and artifact id. Agent Tool can describe a peer agent capability as a tool without replacing the peer protocol.
 
+## CLI and local tools
+
+Preserve command id, argv, working directory, environment policy, sandbox ref, timeout, signal, exit code, stdout/stderr refs, and background task id.
+
 ## Telemetry
 
-Preserve trace id, span id, GenAI tool call attributes, and native request ids. Do not store sensitive arguments or results in telemetry unless explicitly enabled and redacted.
+Preserve trace id, span id, GenAI tool call attributes, native request ids, duration, decision source, and result-size fields. Do not store sensitive arguments or results in telemetry unless explicitly enabled and redacted.
 
 
 
-# MCP search tool
-Source: https://limecloud.github.io/agenttool/en/examples/mcp-search-tool
+# Shell Command With Sandbox
+Source: https://limecloud.github.io/agenttool/en/examples/shell-command-with-sandbox
 
-# MCP Search Tool
+# Shell Command with Sandbox
 
-This example maps an MCP search tool into Agent Tool without replacing MCP.
+Shell tools need more than a command string. They need command classification, sandbox facts, permission matching, progress, timeouts, and large-output policy.
 
 ```json
 {
-  "tool_id": "tool_mcp_search_docs",
-  "namespace": "mcp.docs",
-  "name": "search_docs",
-  "tool_kind": "mcp_tool",
-  "capability_refs": ["web_search", "retrieval"],
-  "external_mappings": [
-    {
-      "source": "mcp",
-      "server_id": "docs-server",
-      "method": "tools/call",
-      "tool_name": "search_docs",
-      "mcp_protocol_version": "2025-06-18"
-    }
-  ],
+  "schema_version": "0.2.0",
+  "tool_id": "tool_shell_exec",
+  "namespace": "local.shell",
+  "name": "shell.exec",
+  "search_hint": "run local shell commands",
+  "tool_kind": "shell_command",
   "input_contract": {
-    "schema": {
+    "strict": true,
+    "model_input_schema": {
       "type": "object",
-      "properties": { "query": { "type": "string" } },
-      "required": ["query"]
-    }
+      "properties": {
+        "command": { "type": "string" },
+        "timeout_ms": { "type": "integer", "minimum": 1000 },
+        "run_in_background": { "type": "boolean" },
+        "description": { "type": "string" }
+      },
+      "required": ["command"],
+      "additionalProperties": false
+    },
+    "runtime_input_schema": {
+      "type": "object",
+      "properties": {
+        "sandbox_override_ref": { "type": "string" },
+        "simulated_edit_ref": { "type": "string" }
+      }
+    },
+    "internal_only_fields": ["sandbox_override_ref", "simulated_edit_ref"]
+  },
+  "tool_interface": {
+    "is_read_only": "classifier:command_read_only",
+    "is_concurrency_safe": "same_as:is_read_only",
+    "is_destructive": "classifier:command_destructive",
+    "is_open_world": true,
+    "classifier_input": "input.command",
+    "permission_matcher": "shell_pattern",
+    "interrupt_behavior": "cancel",
+    "max_inline_chars": 30000
+  },
+  "execution_profile": {
+    "execution_kind": "shell",
+    "supports_progress": true,
+    "supports_cancel": true,
+    "supports_background": true,
+    "sandboxed": true
+  },
+  "permission_profile": {
+    "risk_level": "high",
+    "access_kinds": ["file_read", "file_write", "network", "code_execution"],
+    "write_effects": ["local_persistent", "remote_mutation"],
+    "approval_required": true,
+    "sandbox_profile": "workspace_shell_sandbox"
   }
 }
 ```
 
-The invocation keeps the MCP JSON-RPC request id as a native ref and uses a portable `invocation_id` for cross-system linking.
+## Progress shape
+
+Progress for shell tools SHOULD include elapsed time, stdout/stderr byte counts, line counts, timeout, background task id, and exit code when known.
 
 
 
-# Local file read
-Source: https://limecloud.github.io/agenttool/en/examples/local-file-read
+# Deferred Mcp Tool Discovery
+Source: https://limecloud.github.io/agenttool/en/examples/deferred-mcp-tool-discovery
 
-# Local File Read
+# Deferred MCP Tool Discovery
 
-A local file read tool should declare its scope and permission profile before it is exposed.
+A remote server may expose many tools. Agent Tool can surface names and hints first, then load exact schemas only when needed.
 
 ```json
 {
-  "tool_id": "tool_local_read_file",
-  "namespace": "local.files",
-  "name": "read_file",
-  "tool_kind": "file_operation",
-  "capability_refs": ["local_file_read"],
-  "permission_profile_ref": "perm_read_workspace_files"
+  "schema_version": "0.2.0",
+  "surface_id": "surface_turn_42",
+  "scope": "turn",
+  "loaded_tools": ["tool_search"],
+  "deferred_tools": [
+    {
+      "tool_id": "mcp.github.search_issues",
+      "name": "mcp__github__search_issues",
+      "namespace": "mcp.github",
+      "search_hint": "search repository issues",
+      "source": "mcp",
+      "schema_visibility": "deferred",
+      "loading_state": "discoverable",
+      "native_ref": {
+        "server_name": "github",
+        "tool_name": "search_issues"
+      }
+    }
+  ]
 }
 ```
 
-The result should include a resource ref or embedded resource with media type and redaction state. If the file is private, return a summary plus a protected resource ref instead of raw bytes.
+A tool search result can select by exact name:
+
+```json
+{
+  "schema_version": "0.2.0",
+  "query": "select:mcp__github__search_issues",
+  "query_type": "select",
+  "matches": ["mcp.github.search_issues"],
+  "total_deferred_tools": 31,
+  "next_action": "load_schema_then_call"
+}
+```
 
 
 
-# Browser action
-Source: https://limecloud.github.io/agenttool/en/examples/browser-action
+# Permission Denied With Retry
+Source: https://limecloud.github.io/agenttool/en/examples/permission-denied-with-retry
 
-# Browser Action
+# Permission Denied with Retry
 
-Browser tools should separate planning from execution.
+Permission denial should be represented as a normal tool result so the agent can explain, retry safely, or ask for updated scope.
 
-A click, type, or navigation action can be a `browser_action` tool, but it should carry browser session refs, page refs, observation refs, and permission refs. A tool result can include a screenshot resource and an artifact ref to a browser snapshot.
+```json
+{
+  "schema_version": "0.2.0",
+  "decision_id": "perm_01HZ",
+  "invocation_id": "inv_write_secret",
+  "behavior": "deny",
+  "mode": "default",
+  "source": "project_settings",
+  "reason": {
+    "type": "rule",
+    "rule_ref": "rule_deny_secrets_dir",
+    "message": "Writes under .secrets are denied by project policy."
+  },
+  "blocked_path": "/workspace/.secrets/token.txt",
+  "decided_at": "2026-05-08T00:00:00Z"
+}
+```
 
-
-
-# Image generation task
-Source: https://limecloud.github.io/agenttool/en/examples/image-generation-task
-
-# Image Generation Task
-
-A media-generation tool often creates a runtime task and an artifact.
-
-The invocation records the tool call. The runtime records task scheduling and worker state. The artifact records the generated image, versions, previews, and export refs. Evidence records model/provider/source facts. Policy records whether generation and export were allowed.
-
-
-
-# Tool search
-Source: https://limecloud.github.io/agenttool/en/examples/tool-search
-
-# Tool Search
-
-Tool search is useful when a catalog is too large to place in the model context.
-
-The current surface exposes a small discovery tool. The discovery result returns candidate tool refs with scores and reasons. A later surface can load the selected declarations. This keeps context small and makes tool selection auditable.
-
-
-
-# authoring/quickstart
-Source: https://limecloud.github.io/agenttool/en/authoring/quickstart
-
-# Implementation Quickstart
-
-1. Inventory native tools and preserve their original ids.
-2. Create `tool_declaration` records with namespace, kind, lifecycle, input contract, output contract, and mappings.
-3. Create permission profiles for tools that read, write, access credentials, use network, run code, or mutate remote systems.
-4. Build small `tool_surface` records per turn or task instead of exposing the whole catalog.
-5. Wrap every call in a `tool_invocation` envelope.
-6. Emit progress and terminal result events.
-7. Link results to resources, artifacts, evidence, policy decisions, runtime events, and telemetry spans.
-8. Keep native protocol payloads available by ref where possible.
+```json
+{
+  "schema_version": "0.2.0",
+  "result_id": "result_write_secret",
+  "invocation_id": "inv_write_secret",
+  "status": "denied",
+  "is_error": true,
+  "error": {
+    "error_class": "permission_denied",
+    "recoverability": "change_arguments_or_policy",
+    "retry_after": null
+  },
+  "policy_refs": ["policy:project-file-access"],
+  "created_at": "2026-05-08T00:00:01Z"
+}
+```
 
 
 
-# authoring/acceptance-scenarios
-Source: https://limecloud.github.io/agenttool/en/authoring/acceptance-scenarios
+# Large Result Persistence
+Source: https://limecloud.github.io/agenttool/en/examples/large-result-persistence
 
-# Acceptance Scenarios
+# Large Result Persistence
 
-A compatible implementation should pass these scenarios:
+Large outputs should not flood prompts. Persist the full payload, send a preview to the model, and keep refs for audit.
 
-1. A tool declaration can be discovered without loading every tool into the model context.
-2. Input arguments can be validated before execution.
-3. Sensitive arguments are redacted from telemetry unless explicitly allowed.
-4. A risky tool call can pause for approval and then resume with the same invocation id.
-5. A long-running call emits ordered progress and can report cancellation support accurately.
-6. A large result returns refs rather than embedding the full payload.
-7. A tool result can create or link to an Agent Artifact.
-8. Evidence can reconstruct which tool ran, with what native id, and why the result is trusted or not.
-9. Policy can explain why a tool was allowed, denied, deferred, or waived.
-10. MCP, OpenAPI, provider function calling, and peer-agent tools preserve their native ids.
+```json
+{
+  "schema_version": "0.2.0",
+  "decision_id": "persist_grep_01",
+  "invocation_id": "inv_grep_big",
+  "result_id": "result_grep_big",
+  "strategy": "preview_and_persist",
+  "threshold": { "max_inline_chars": 50000 },
+  "original_size_bytes": 481204,
+  "preview_size_bytes": 2048,
+  "persisted_ref": {
+    "uri": "agent-runtime://session/tool-results/inv_grep_big.txt",
+    "media_type": "text/plain",
+    "digest": "sha256:example"
+  },
+  "reason": "result_exceeded_inline_limit",
+  "created_at": "2026-05-08T00:00:00Z"
+}
+```
+
+```json
+{
+  "schema_version": "0.2.0",
+  "result_id": "result_grep_big",
+  "invocation_id": "inv_grep_big",
+  "status": "succeeded",
+  "model_facing_content": [
+    {
+      "type": "text",
+      "text": "Output too large. Full output saved to persisted_ref. Preview: ..."
+    }
+  ],
+  "persistence_refs": ["persist_grep_01"],
+  "created_at": "2026-05-08T00:00:01Z"
+}
+```
 
 
 
-# reference/glossary
-Source: https://limecloud.github.io/agenttool/en/reference/glossary
+# Parallel Read Tools
+Source: https://limecloud.github.io/agenttool/en/examples/parallel-read-tools
 
-# Glossary
+# Parallel Read Tools
 
-| Term | Meaning |
-| --- | --- |
-| Tool declaration | Portable description of a callable capability. |
-| Tool surface | Context-specific set of tools visible to an agent or model. |
-| Tool invocation | One requested or executed tool call. |
-| Execution profile | Description of how a tool is run and which lifecycle operations it supports. |
-| Permission profile | Risk and access facts needed by policy systems or human reviewers. |
-| Native id | Identifier from the backing protocol or provider, preserved by Agent Tool. |
-| Resource ref | Reference to context or bytes that can be fetched by another system. |
-| Artifact ref | Reference to a durable deliverable governed by Agent Artifact. |
-| Evidence ref | Reference to trust, provenance, replay, review, or audit facts. |
-| Policy ref | Reference to a decision, approval, grant, waiver, or risk record. |
+Read tools can often run together, but the scheduler still needs per-call facts and ordered terminal results.
+
+```json
+{
+  "schema_version": "0.2.0",
+  "scheduler_policy_id": "sched_parallel_reads",
+  "ordering_policy": "preserve_terminal_order",
+  "yield_policy": "progress_immediate_results_ordered",
+  "max_parallel": 10,
+  "sibling_failure_policy": "ignore",
+  "context_modifier_policy": "defer_until_batch_complete"
+}
+```
+
+```json
+[
+  {
+    "invocation_id": "inv_read_a",
+    "tool_id": "tool_file_read",
+    "status": "queued",
+    "scheduler": {
+      "is_concurrency_safe": true,
+      "is_read_only": true,
+      "interrupt_behavior": "cancel"
+    }
+  },
+  {
+    "invocation_id": "inv_read_b",
+    "tool_id": "tool_file_read",
+    "status": "queued",
+    "scheduler": {
+      "is_concurrency_safe": true,
+      "is_read_only": true,
+      "interrupt_behavior": "cancel"
+    }
+  }
+]
+```
+
+Progress may stream immediately for both calls. Terminal results should be yielded in invocation order unless the surface declares unordered results.
 
 
 
-# reference/json-schemas
+# Json Schemas
 Source: https://limecloud.github.io/agenttool/en/reference/json-schemas
 
 # JSON Schemas
 
-Agent Tool publishes draft JSON Schemas for interoperability testing. They are intentionally small in v0.1.0 and will evolve with implementation feedback.
+Agent Tool publishes draft JSON Schemas for interoperability testing. v0.2.0 expands beyond declaration/result basics into runtime interface, permission decision, hooks, scheduling, deferred loading, input mutation, and result persistence.
 
 | Schema | Purpose |
 | --- | --- |
 | [agenttool-tool-declaration.schema.json](/schemas/agenttool-tool-declaration.schema.json) | Tool declaration. |
+| [agenttool-tool-interface.schema.json](/schemas/agenttool-tool-interface.schema.json) | Runtime tool interface. |
 | [agenttool-tool-surface.schema.json](/schemas/agenttool-tool-surface.schema.json) | Context-specific tool surface. |
 | [agenttool-invocation.schema.json](/schemas/agenttool-invocation.schema.json) | Tool invocation envelope. |
-| [agenttool-result.schema.json](/schemas/agenttool-result.schema.json) | Tool result envelope. |
-| [agenttool-progress.schema.json](/schemas/agenttool-progress.schema.json) | Progress event payload. |
 | [agenttool-permission-profile.schema.json](/schemas/agenttool-permission-profile.schema.json) | Permission profile. |
+| [agenttool-permission-decision.schema.json](/schemas/agenttool-permission-decision.schema.json) | Per-invocation permission decision. |
+| [agenttool-input-mutation.schema.json](/schemas/agenttool-input-mutation.schema.json) | Input mutation record. |
+| [agenttool-hook.schema.json](/schemas/agenttool-hook.schema.json) | Tool hook record. |
+| [agenttool-scheduler-policy.schema.json](/schemas/agenttool-scheduler-policy.schema.json) | Concurrency and scheduling policy. |
+| [agenttool-deferred-tool.schema.json](/schemas/agenttool-deferred-tool.schema.json) | Deferred tool reference. |
+| [agenttool-result.schema.json](/schemas/agenttool-result.schema.json) | Tool result envelope. |
+| [agenttool-result-persistence.schema.json](/schemas/agenttool-result-persistence.schema.json) | Result persistence decision. |
+| [agenttool-progress.schema.json](/schemas/agenttool-progress.schema.json) | Progress event payload. |
 | [agenttool-execution-profile.schema.json](/schemas/agenttool-execution-profile.schema.json) | Execution profile. |
 | [agenttool-event.schema.json](/schemas/agenttool-event.schema.json) | Tool lifecycle event. |
 
 
 
-# reference/ecosystem-boundaries
-Source: https://limecloud.github.io/agenttool/en/reference/ecosystem-boundaries
-
-# Ecosystem Boundaries
-
-Agent Tool should stay narrow.
-
-| Adjacent layer | Boundary |
-| --- | --- |
-| Runtime | Runtime executes and schedules. Tool records the callable capability and call facts. |
-| Policy | Policy decides. Tool describes risk and required permissions. |
-| Evidence | Evidence verifies and audits. Tool links invocation and result facts. |
-| Artifact | Artifact owns durable deliverables. Tool links results to artifacts. |
-| UI | UI renders and controls. Tool provides machine-readable state. |
-| Knowledge | Knowledge provides source-grounded context. Tool may retrieve or cite it but does not own it. |
-| Skills | Skills package instructions and workflows. Tool exposes executable capabilities. |
-| MCP/OpenAPI/provider APIs | Native protocols own wire semantics. Tool preserves mappings and adds agent-specific lifecycle. |
-
-
-
-# reference/research-sources
+# Research Sources
 Source: https://limecloud.github.io/agenttool/en/reference/research-sources
 
 # Research Sources
 
-Agent Tool v0.1.0 uses established tool, API, eventing, telemetry, authorization, and agent protocol references. These references inform the shape of the standard; they do not transfer ownership of Agent Tool semantics.
+Agent Tool v0.2.0 uses established tool, API, eventing, telemetry, authorization, and agent protocol references. These references inform the shape of the standard; they do not transfer ownership of Agent Tool semantics.
 
 | Source | What Agent Tool takes from it |
 | --- | --- |
-| [Model Context Protocol tools specification](https://modelcontextprotocol.io/specification/2025-06-18/server/tools) | Tool discovery, `tools/list`, `tools/call`, `inputSchema`, `outputSchema`, content blocks, `structuredContent`, `resource_link`, embedded resources, annotations, errors, and safety guidance. |
+| [Model Context Protocol tools specification](https://modelcontextprotocol.io/specification/2025-06-18/server/tools) | Tool discovery, `tools/list`, `tools/call`, `name`, `title`, `description`, `inputSchema`, `outputSchema`, content blocks, `structuredContent`, `resource_link`, embedded resources, annotations, `isError`, `_meta`, errors, and safety guidance. |
 | [Agent2Agent Protocol](https://a2a-protocol.org/latest/specification/) | Agent cards, skills, tasks, messages, artifacts, streaming events, auth scoping, native task/context/artifact ids, and peer-agent capability references. |
-| [OpenAI function calling guide](https://platform.openai.com/docs/guides/function-calling) | Function tools, tool calls, tool outputs, `tool_call_id`, tool choice, allowed tools, strict schema mode, custom tools, and tool search. |
+| [OpenAI function calling guide](https://platform.openai.com/docs/guides/function-calling) | Function tools, tool calls, tool outputs, `tool_call_id`, tool choice, parallel tool calls, strict schema mode, custom tools, and tool search/deferred loading concepts. |
 | [OpenAPI Specification](https://spec.openapis.org/oas/latest.html) | Operation ids, methods, paths, request/response schemas, security schemes, and API operation mapping. |
 | [JSON Schema 2020-12 validation](https://json-schema.org/draft/2020-12/json-schema-validation) | Structural validation for input and output contracts. |
 | [OAuth 2.0 RFC 6749](https://www.rfc-editor.org/rfc/rfc6749) | Authorization scopes, grants, tokens, and credential delegation references. |
 | [CloudEvents specification](https://github.com/cloudevents/spec/blob/main/cloudevents/spec.md) | Portable event envelope fields such as `id`, `source`, `specversion`, `type`, `subject`, `time`, and content metadata. |
-| [OpenTelemetry GenAI MCP conventions](https://opentelemetry.io/docs/specs/semconv/gen-ai/mcp/) | `execute_tool` spans, `gen_ai.tool.name`, `gen_ai.tool.call.arguments`, `gen_ai.tool.call.result`, JSON-RPC ids, MCP session ids, and trace/span correlation. |
+| [OpenTelemetry GenAI MCP conventions](https://opentelemetry.io/docs/specs/semconv/gen-ai/mcp/) | Tool execution spans, tool names, arguments/results, JSON-RPC ids, MCP session ids, and trace/span correlation. |
 | [Agent Skills](https://agentskills.io/) | AI-friendly authoring style, progressive disclosure, package-versus-runtime boundary, and skill/tool distinction. |
 | [in-toto Attestation](https://github.com/in-toto/attestation) | Signed statements and subject refs for tool-generated audit packages. |
 
+## Implementation analysis inputs
+
+Agent Tool v0.2.0 also incorporates source-level analysis of coding-agent tool systems, especially their tool interfaces, permission flows, hook pipelines, streaming execution, tool search, file tools, shell tools, MCP adapters, and result persistence mechanisms. The public standard keeps the distilled contracts and avoids depending on any one product implementation.
 
 
-# reference/source-analysis
+
+# Source Analysis
 Source: https://limecloud.github.io/agenttool/en/reference/source-analysis
 
 # Source Analysis
@@ -825,94 +1516,32 @@ Agent Tool exists because agent systems need a tool layer that is more precise t
 
 ## What existing standards already solve
 
-MCP defines a strong tool discovery and invocation protocol with content blocks and resource links. OpenAPI defines API operations and schemas. Function calling APIs define model-facing tool calls and tool outputs. A2A defines peer-agent skills, tasks, and artifacts. OpenTelemetry defines how tool calls can be traced. CloudEvents defines a portable event envelope. OAuth and security schemes define credential and scope patterns.
+MCP defines a strong tool discovery and invocation protocol with content blocks, structured content, resource links, annotations, and tool-result error flags. OpenAPI defines API operations and schemas. Function calling APIs define model-facing tool calls, strict schemas, tool choice, tool call ids, and parallel-call options. A2A defines peer-agent skills, tasks, messages, streaming updates, and artifacts. OpenTelemetry defines how tool calls can be traced. CloudEvents defines a portable event envelope. OAuth and security schemes define credential and scope patterns.
 
-## What agent products add
+## What coding-agent runtimes add
 
-Agent products combine all of these in one surface. A single task may expose local file tools, remote MCP tools, browser controls, shell commands, API adapters, tool search, media generation tasks, and peer-agent capabilities. Those tools need policy, approval, progress, cancellation, artifact refs, evidence refs, and telemetry refs. Native protocols do not all describe these agent-specific relationships in the same way.
+Modern coding-agent runtimes expose a richer tool system than a simple function list. Analysis of CLI and agent-runtime tool implementations shows these recurring needs:
+
+1. Tool identity includes primary names, aliases, search hints, human-facing names, native ids, and compatibility names.
+2. A tool has multiple schemas: model-facing schema, runtime schema, output schema, and sometimes native protocol schema.
+3. Safety is input-dependent: read-only, destructive, open-world, sandbox override, and concurrency safety may change per call.
+4. Permission is a decision flow: modes, rule sources, ask/allow/deny, user feedback, classifier checks, and updated input all matter.
+5. Hooks can add context, emit progress, stop continuation, return permission decisions, or rewrite inputs.
+6. Tool input is not a single mutable object; model input, observable input, permission input, and call input need separate records.
+7. Parallel execution needs explicit queued/executing/completed/yielded states, interrupt behavior, sibling failure rules, and synthetic results.
+8. Large catalogs need deferred loading and tool search so models do not ingest every schema.
+9. Tool results need model-facing serialization, UI-facing rendering, transcript search text, telemetry refs, and persisted payload refs.
+10. Denials, validation failures, rejected approvals, sibling cancellations, and streaming fallback should be terminal tool results, not invisible exceptions.
 
 ## Design conclusions
 
 1. Preserve native ids and protocols instead of replacing them.
-2. Separate catalog, surface, declaration, invocation, execution, and result.
-3. Keep permission facts separate from policy decisions.
-4. Treat progress, cancellation, timeout, and partial result as first-class facts.
-5. Prefer refs for large or sensitive results.
-6. Link tool results to Agent Artifact and Agent Evidence rather than embedding all audit data in the tool result.
-7. Keep tool search and deferred loading as normal surface mechanics for large catalogs.
-8. Make errors structured enough for retry, recovery, UI, and evidence.
-
-
-
-# reference/agent-ecosystem
-Source: https://limecloud.github.io/agenttool/en/reference/agent-ecosystem
-
-# Agent Standards Ecosystem
-
-The Agent standards ecosystem splits agent products into portable contracts. Each standard owns one layer of meaning and links to the others through stable refs instead of swallowing their responsibilities.
-
-## Where Agent Tool fits
-
-Agent Tool owns portable tool facts: declarations, surfaces, capability refs, input/output contracts, execution profiles, permission profiles, invocations, progress, results, errors, and audit refs.
-
-Tool explains what capability was exposed, how it was selected, what call was made, how it progressed, what result came back, and how native protocol ids relate to runtime, UI, evidence, policy, artifact, knowledge, and skills.
-
-## Current standards
-
-| Standard | Role | Site | LLM context | Repository |
-| --- | --- | --- | --- | --- |
-| Agent Knowledge | Source-grounded knowledge packs for agents. | [site](https://limecloud.github.io/agentknowledge/) | [llms-full](https://limecloud.github.io/agentknowledge/llms-full.txt) | [repo](https://github.com/limecloud/agentknowledge) |
-| Agent UI | Interaction surfaces for agent products. | [site](https://limecloud.github.io/agentui/) | [llms-full](https://limecloud.github.io/agentui/llms-full.txt) | [repo](https://github.com/limecloud/agentui) |
-| Agent Runtime | Execution facts, controls, tasks, tools, and recovery. | [site](https://limecloud.github.io/agentruntime/) | [llms-full](https://limecloud.github.io/agentruntime/llms-full.txt) | [repo](https://github.com/limecloud/agentruntime) |
-| Agent Evidence | Evidence, provenance, verification, review, replay, and export. | [site](https://limecloud.github.io/agentevidence/) | [llms-full](https://limecloud.github.io/agentevidence/llms-full.txt) | [repo](https://github.com/limecloud/agentevidence) |
-| Agent Policy | Risk, permission, approval, retention, waiver, access, and policy decision facts. | [site](https://limecloud.github.io/agentpolicy/) | [llms-full](https://limecloud.github.io/agentpolicy/llms-full.txt) | [repo](https://github.com/limecloud/agentpolicy) |
-| Agent Artifact | Durable deliverables, versions, parts, previews, exports, source links, and handoff packages. | [site](https://limecloud.github.io/agentartifact/) | [llms-full](https://limecloud.github.io/agentartifact/llms-full.txt) | [repo](https://github.com/limecloud/agentartifact) |
-| Agent Tool | Tool declarations, surfaces, invocations, progress, results, permissions, and audit refs. | [site](https://limecloud.github.io/agenttool/) | [llms-full](https://limecloud.github.io/agenttool/llms-full.txt) | [repo](https://github.com/limecloud/agenttool) |
-| Agent Context | Context surfaces, items, source refs, selection, budgets, assembly, injection, compaction, and missing-context facts. | [site](https://limecloud.github.io/agentcontext/) | [llms-full](https://limecloud.github.io/agentcontext/llms-full.txt) | [repo](https://github.com/limecloud/agentcontext) |
-
-## Boundary rule
-
-```text
-Agent Knowledge -> what durable source-grounded context an agent can use
-Agent Runtime   -> how agent work is accepted, executed, controlled, and resumed
-Agent UI        -> how agent work is projected into user-visible surfaces
-Agent Evidence  -> why an agent outcome can be trusted, reviewed, replayed, and exported
-Agent Policy    -> whether an agent action may proceed and under which constraints
-Agent Artifact  -> what durable deliverable the agent produced and how it changes
-Agent Tool      -> what capability was exposed, invoked, progressed, and returned
-Agent Context   -> what context was available, selected, assembled, compacted, missing, and injected
-```
-
-No standard should become the whole stack. A compatible implementation should preserve native ids and link across standards with refs.
-
-## Future standard candidates
-
-| Candidate | Why it may become a standard |
-| --- | --- |
-| Agent Evaluation | Acceptance scenarios, rubrics, eval runs, quality gates, and evidence-backed benchmark records. |
-| Agent Workflow | Portable multi-step work plans, scene launches, background jobs, and handoff states. |
-| Agent Model Routing | Task profiles, model candidates, routing decisions, fallback, quota, and cost records. |
-| Agent Channel | Remote runtime, A2A peers, webhooks, deep links, browser sessions, and desktop bridges. |
-
-These candidates should remain design notes until they can be specified without relying on one product implementation.
-
-
-
-# versions/v0.1.0/overview
-Source: https://limecloud.github.io/agenttool/en/versions/v0.1.0/overview
-
-# v0.1.0 Overview
-
-Agent Tool v0.1.0 is the first public draft. It defines the portable tool layer for agent systems.
-
-## Included
-
-- Tool declarations and tool surfaces.
-- Input/output contracts and schema guidance.
-- Execution profiles and permission profiles.
-- Invocation lifecycle, progress, cancellation, and results.
-- Error classes, retry guidance, and event classes.
-- External mappings for MCP, OpenAPI, function calling, A2A, CLI, browser, and native tools.
-- English and Chinese documentation.
-- Public JSON Schemas.
-- LLM-friendly `llms.txt` and `llms-full.txt`.
+2. Separate catalog, surface, declaration, interface, invocation, permission decision, scheduling, execution, persistence, and result.
+3. Keep permission facts separate from policy decisions, but record concrete per-invocation decisions.
+4. Treat hooks and input mutation as first-class lifecycle facts.
+5. Treat progress, cancellation, timeout, sibling failure, and partial result as first-class facts.
+6. Prefer refs for large or sensitive results, and keep rendering separate from model-facing result content.
+7. Link tool results to Agent Artifact and Agent Evidence rather than embedding all audit data in the tool result.
+8. Keep tool search and deferred loading as normal surface mechanics for large catalogs.
+9. Make errors structured enough for retry, recovery, UI, and evidence.
+10. Fail closed when concurrency, write effects, or open-world behavior are unknown.

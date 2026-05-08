@@ -1,0 +1,91 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Agent Tool permission decision",
+  "type": "object",
+  "required": [
+    "schema_version",
+    "decision_id",
+    "invocation_id",
+    "behavior",
+    "decided_at"
+  ],
+  "properties": {
+    "schema_version": {
+      "type": "string"
+    },
+    "decision_id": {
+      "type": "string"
+    },
+    "invocation_id": {
+      "type": "string"
+    },
+    "behavior": {
+      "enum": [
+        "allow",
+        "ask",
+        "deny",
+        "passthrough"
+      ]
+    },
+    "mode": {
+      "type": "string"
+    },
+    "source": {
+      "type": "string"
+    },
+    "reason": {
+      "type": "object",
+      "additionalProperties": true
+    },
+    "rule_refs": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "policy_refs": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "updated_input": {},
+    "updated_input_ref": {
+      "type": "string"
+    },
+    "user_modified": {
+      "type": "boolean"
+    },
+    "suggested_updates": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": true
+      }
+    },
+    "pending_classifier_check": {
+      "type": "object",
+      "additionalProperties": true
+    },
+    "blocked_path": {
+      "type": "string"
+    },
+    "content_blocks": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": true
+      }
+    },
+    "accept_feedback": {
+      "type": "string"
+    },
+    "decided_at": {
+      "type": "string"
+    },
+    "expires_at": {
+      "type": "string"
+    }
+  },
+  "additionalProperties": true
+}

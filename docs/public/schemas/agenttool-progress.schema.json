@@ -1,4 +1,5 @@
 {
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
   "title": "Agent Tool progress",
   "type": "object",
   "required": [
@@ -39,6 +40,21 @@
     "total_steps": {
       "type": "integer"
     },
+    "elapsed_ms": {
+      "type": "integer"
+    },
+    "bytes_read": {
+      "type": "integer"
+    },
+    "bytes_written": {
+      "type": "integer"
+    },
+    "line_count": {
+      "type": "integer"
+    },
+    "task_id": {
+      "type": "string"
+    },
     "partial_result_refs": {
       "type": "array",
       "items": {
@@ -56,6 +72,5 @@
       "type": "string"
     }
   },
-  "$schema": "https://json-schema.org/draft/2020-12/schema",
   "additionalProperties": true
 }

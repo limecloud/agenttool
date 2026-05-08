@@ -1,0 +1,65 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Agent Tool scheduler policy",
+  "type": "object",
+  "required": [
+    "schema_version",
+    "scheduler_policy_id"
+  ],
+  "properties": {
+    "schema_version": {
+      "type": "string"
+    },
+    "scheduler_policy_id": {
+      "type": "string"
+    },
+    "scope": {
+      "type": "string"
+    },
+    "max_parallel": {
+      "type": "integer"
+    },
+    "ordering_policy": {
+      "enum": [
+        "preserve_terminal_order",
+        "allow_unordered",
+        "serial"
+      ]
+    },
+    "yield_policy": {
+      "enum": [
+        "progress_immediate_results_ordered",
+        "all_ordered",
+        "unordered_streaming"
+      ]
+    },
+    "interrupt_behavior": {
+      "enum": [
+        "cancel",
+        "block"
+      ]
+    },
+    "sibling_failure_policy": {
+      "enum": [
+        "ignore",
+        "cancel_siblings",
+        "cancel_dependent"
+      ]
+    },
+    "context_modifier_policy": {
+      "enum": [
+        "allow_serial_only",
+        "defer_until_batch_complete",
+        "forbid"
+      ]
+    },
+    "resource_locks": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": true
+      }
+    }
+  },
+  "additionalProperties": true
+}

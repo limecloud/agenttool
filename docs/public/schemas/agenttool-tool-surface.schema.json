@@ -1,11 +1,11 @@
 {
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
   "title": "Agent Tool surface",
   "type": "object",
   "required": [
     "schema_version",
     "surface_id",
-    "scope",
-    "tool_refs"
+    "scope"
   ],
   "properties": {
     "schema_version": {
@@ -29,13 +29,22 @@
         "type": "string"
       }
     },
+    "loaded_tools": {
+      "type": "array",
+      "items": {}
+    },
     "deferred_tools": {
       "type": "array",
-      "items": {
-        "type": "string"
-      }
+      "items": {}
     },
     "blocked_tools": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": true
+      }
+    },
+    "excluded_tools": {
       "type": "array",
       "items": {
         "type": "object",
@@ -45,6 +54,24 @@
     "selection_policy": {
       "type": "object",
       "additionalProperties": true
+    },
+    "default_tool_choice": {},
+    "capability_requirements": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "model_capabilities": {
+      "type": "object",
+      "additionalProperties": true
+    },
+    "role_constraints": {
+      "type": "object",
+      "additionalProperties": true
+    },
+    "surface_reason": {
+      "type": "string"
     },
     "policy_refs": {
       "type": "array",
@@ -59,6 +86,5 @@
       }
     }
   },
-  "$schema": "https://json-schema.org/draft/2020-12/schema",
   "additionalProperties": true
 }

@@ -1,0 +1,69 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Agent Tool hook",
+  "type": "object",
+  "required": [
+    "schema_version",
+    "hook_id",
+    "hook_event"
+  ],
+  "properties": {
+    "schema_version": {
+      "type": "string"
+    },
+    "hook_id": {
+      "type": "string"
+    },
+    "hook_event": {
+      "enum": [
+        "pre_tool_use",
+        "post_tool_use",
+        "post_tool_use_failure",
+        "permission_request",
+        "permission_decision",
+        "result_persistence"
+      ]
+    },
+    "invocation_id": {
+      "type": "string"
+    },
+    "tool_id": {
+      "type": "string"
+    },
+    "matcher": {
+      "type": "object",
+      "additionalProperties": true
+    },
+    "outputs": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": true
+      }
+    },
+    "permission_result": {
+      "type": "object",
+      "additionalProperties": true
+    },
+    "updated_input": {},
+    "additional_context": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": true
+      }
+    },
+    "stop": {
+      "type": "object",
+      "additionalProperties": true
+    },
+    "updated_output": {},
+    "started_at": {
+      "type": "string"
+    },
+    "ended_at": {
+      "type": "string"
+    }
+  },
+  "additionalProperties": true
+}

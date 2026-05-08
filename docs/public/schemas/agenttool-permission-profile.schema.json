@@ -1,4 +1,5 @@
 {
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
   "title": "Agent Tool permission profile",
   "type": "object",
   "required": [
@@ -36,6 +37,9 @@
     "network_scope": {
       "type": "string"
     },
+    "tenant_scope": {
+      "type": "string"
+    },
     "credential_refs": {
       "type": "array",
       "items": {
@@ -50,6 +54,15 @@
     },
     "approval_reason": {
       "type": "string"
+    },
+    "permission_channel": {
+      "type": "string"
+    },
+    "rule_matching_fields": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
     },
     "data_sensitivity": {
       "type": "string"
@@ -67,6 +80,5 @@
       }
     }
   },
-  "$schema": "https://json-schema.org/draft/2020-12/schema",
   "additionalProperties": true
 }
