@@ -1,0 +1,72 @@
+{
+  "title": "Agent Tool permission profile",
+  "type": "object",
+  "required": [
+    "schema_version",
+    "permission_profile_id",
+    "risk_level"
+  ],
+  "properties": {
+    "schema_version": {
+      "type": "string"
+    },
+    "permission_profile_id": {
+      "type": "string"
+    },
+    "risk_level": {
+      "enum": [
+        "low",
+        "medium",
+        "high",
+        "critical"
+      ]
+    },
+    "access_kinds": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "write_effects": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "network_scope": {
+      "type": "string"
+    },
+    "credential_refs": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "sandbox_profile": {
+      "type": "string"
+    },
+    "approval_required": {
+      "type": "boolean"
+    },
+    "approval_reason": {
+      "type": "string"
+    },
+    "data_sensitivity": {
+      "type": "string"
+    },
+    "retention_hint": {
+      "type": "string"
+    },
+    "redaction_required": {
+      "type": "boolean"
+    },
+    "policy_refs": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    }
+  },
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "additionalProperties": true
+}

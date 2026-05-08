@@ -1,0 +1,53 @@
+{
+  "title": "Agent Tool execution profile",
+  "type": "object",
+  "required": [
+    "schema_version",
+    "execution_profile_id",
+    "execution_kind"
+  ],
+  "properties": {
+    "schema_version": {
+      "type": "string"
+    },
+    "execution_profile_id": {
+      "type": "string"
+    },
+    "execution_kind": {
+      "type": "string"
+    },
+    "supports_progress": {
+      "type": "boolean"
+    },
+    "supports_cancel": {
+      "type": "boolean"
+    },
+    "supports_resume": {
+      "type": "boolean"
+    },
+    "supports_retries": {
+      "type": "boolean"
+    },
+    "supports_partial_results": {
+      "type": "boolean"
+    },
+    "supports_artifacts": {
+      "type": "boolean"
+    },
+    "sandboxed": {
+      "type": "boolean"
+    },
+    "timeout_ms": {
+      "type": "integer"
+    },
+    "external_mappings": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": true
+      }
+    }
+  },
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "additionalProperties": true
+}

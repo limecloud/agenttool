@@ -1,0 +1,14 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="128" height="128" viewBox="0 0 128 128" role="img" aria-label="Agent Tool logo">
+  <defs>
+    <linearGradient id="g" x1="16" y1="112" x2="112" y2="16" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#0f766e"/>
+      <stop offset="0.55" stop-color="#f59e0b"/>
+      <stop offset="1" stop-color="#111827"/>
+    </linearGradient>
+  </defs>
+  <rect x="10" y="10" width="108" height="108" rx="28" fill="#fff7ed"/>
+  <path d="M38 78 73 43l12 12-35 35H38V78Z" fill="url(#g)"/>
+  <path d="M79 31 97 49 87 59 69 41l10-10Z" fill="#111827"/>
+  <circle cx="42" cy="42" r="10" fill="#0f766e"/>
+  <circle cx="86" cy="86" r="10" fill="#f59e0b"/>
+</svg>

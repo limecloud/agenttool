@@ -1,0 +1,61 @@
+{
+  "title": "Agent Tool progress",
+  "type": "object",
+  "required": [
+    "schema_version",
+    "progress_id",
+    "invocation_id",
+    "sequence",
+    "status",
+    "timestamp"
+  ],
+  "properties": {
+    "schema_version": {
+      "type": "string"
+    },
+    "progress_id": {
+      "type": "string"
+    },
+    "invocation_id": {
+      "type": "string"
+    },
+    "sequence": {
+      "type": "integer"
+    },
+    "status": {
+      "type": "string"
+    },
+    "message": {
+      "type": "string"
+    },
+    "percent": {
+      "type": "number",
+      "minimum": 0,
+      "maximum": 100
+    },
+    "current_step": {
+      "type": "string"
+    },
+    "total_steps": {
+      "type": "integer"
+    },
+    "partial_result_refs": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "artifact_refs": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": true
+      }
+    },
+    "timestamp": {
+      "type": "string"
+    }
+  },
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "additionalProperties": true
+}

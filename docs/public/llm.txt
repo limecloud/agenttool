@@ -1,0 +1,73 @@
+# Agent Tool
+
+> Agent Tool is a portable standard for agent tool declarations, context-specific tool surfaces, input/output contracts, execution profiles, permission profiles, invocations, progress, results, errors, and audit refs.
+
+Use this file as the concise navigation index for LLMs. Use `llms-full.txt` when a single prompt needs the current core documentation in one markdown file.
+
+## Full context
+
+- [llms-full.txt](https://limecloud.github.io/agenttool/llms-full.txt): Concatenated current English documentation with source URLs.
+
+## Primary docs
+
+- [What is Agent Tool?](https://limecloud.github.io/agenttool/en/what-is-agent-tool): Overview and boundaries.
+- [Specification](https://limecloud.github.io/agenttool/en/specification): Latest normative draft.
+- [Tool model](https://limecloud.github.io/agenttool/en/concepts/tool-model): Object model and identity.
+
+## Core contracts
+
+- [Tool declaration](https://limecloud.github.io/agenttool/en/contracts/tool-declaration)
+- [Tool surface](https://limecloud.github.io/agenttool/en/contracts/tool-surface)
+- [Input and output contracts](https://limecloud.github.io/agenttool/en/contracts/input-output-contracts)
+- [Execution profile](https://limecloud.github.io/agenttool/en/contracts/execution-profile)
+- [Permission profile](https://limecloud.github.io/agenttool/en/contracts/permission-profile)
+- [Invocation lifecycle](https://limecloud.github.io/agenttool/en/contracts/invocation-lifecycle)
+- [Progress and cancellation](https://limecloud.github.io/agenttool/en/contracts/progress-and-cancellation)
+- [Result envelope](https://limecloud.github.io/agenttool/en/contracts/result-envelope)
+- [Resource and artifact refs](https://limecloud.github.io/agenttool/en/contracts/resource-and-artifact-refs)
+- [Errors and retries](https://limecloud.github.io/agenttool/en/contracts/errors-and-retries)
+- [Interoperability](https://limecloud.github.io/agenttool/en/contracts/interoperability)
+
+## Examples
+
+- [MCP search tool](https://limecloud.github.io/agenttool/en/examples/mcp-search-tool)
+- [Local file read](https://limecloud.github.io/agenttool/en/examples/local-file-read)
+- [Browser action](https://limecloud.github.io/agenttool/en/examples/browser-action)
+- [Image generation task](https://limecloud.github.io/agenttool/en/examples/image-generation-task)
+- [Tool search](https://limecloud.github.io/agenttool/en/examples/tool-search)
+
+## Reference
+
+- [Agent standards ecosystem](https://limecloud.github.io/agenttool/en/reference/agent-ecosystem): Mutual links across Agent Knowledge, Agent UI, Agent Runtime, Agent Evidence, Agent Policy, Agent Artifact, and Agent Tool.
+- [JSON Schemas](https://limecloud.github.io/agenttool/en/reference/json-schemas)
+- [Research sources](https://limecloud.github.io/agenttool/en/reference/research-sources)
+- [Source analysis](https://limecloud.github.io/agenttool/en/reference/source-analysis)
+
+## Related standards
+
+- [Agent Knowledge](https://limecloud.github.io/agentknowledge/): Source-grounded knowledge packs.
+- [Agent UI](https://limecloud.github.io/agentui/): Interaction surfaces for agent products.
+- [Agent Runtime](https://limecloud.github.io/agentruntime/): Execution facts, controls, tasks, tools, and recovery.
+- [Agent Evidence](https://limecloud.github.io/agentevidence/): Evidence, provenance, verification, review, replay, and export.
+- [Agent Policy](https://limecloud.github.io/agentpolicy/): Policy decisions, approvals, permissions, risk, retention, waivers, and traces.
+- [Agent Artifact](https://limecloud.github.io/agentartifact/): Durable deliverables, versions, parts, previews, exports, and handoff packages.
+
+## Versions
+
+- [v0.1.0 overview](https://limecloud.github.io/agenttool/en/versions/v0.1.0/overview): Latest released version overview.
+- [v0.1.0 specification snapshot](https://limecloud.github.io/agenttool/en/versions/v0.1.0/specification): Latest released specification snapshot.
+
+## Schemas
+
+- [Tool declaration schema](https://limecloud.github.io/agenttool/schemas/agenttool-tool-declaration.schema.json)
+- [Tool surface schema](https://limecloud.github.io/agenttool/schemas/agenttool-tool-surface.schema.json)
+- [Invocation schema](https://limecloud.github.io/agenttool/schemas/agenttool-invocation.schema.json)
+- [Result schema](https://limecloud.github.io/agenttool/schemas/agenttool-result.schema.json)
+- [Progress schema](https://limecloud.github.io/agenttool/schemas/agenttool-progress.schema.json)
+- [Permission profile schema](https://limecloud.github.io/agenttool/schemas/agenttool-permission-profile.schema.json)
+- [Execution profile schema](https://limecloud.github.io/agenttool/schemas/agenttool-execution-profile.schema.json)
+- [Event schema](https://limecloud.github.io/agenttool/schemas/agenttool-event.schema.json)
+
+## Language mirrors
+
+- Chinese documentation is available under `/zh/` with matching page structure where translated pages exist.

@@ -1,0 +1,79 @@
+{
+  "title": "Agent Tool declaration",
+  "type": "object",
+  "required": [
+    "schema_version",
+    "tool_id",
+    "namespace",
+    "name",
+    "description",
+    "lifecycle",
+    "tool_kind"
+  ],
+  "properties": {
+    "schema_version": {
+      "type": "string"
+    },
+    "tool_id": {
+      "type": "string"
+    },
+    "namespace": {
+      "type": "string"
+    },
+    "name": {
+      "type": "string"
+    },
+    "title": {
+      "type": "string"
+    },
+    "description": {
+      "type": "string"
+    },
+    "lifecycle": {
+      "enum": [
+        "draft",
+        "available",
+        "disabled",
+        "requires_setup",
+        "deprecated",
+        "retired"
+      ]
+    },
+    "tool_kind": {
+      "type": "string"
+    },
+    "capability_refs": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "input_contract": {
+      "type": "object",
+      "additionalProperties": true
+    },
+    "output_contract": {
+      "type": "object",
+      "additionalProperties": true
+    },
+    "execution_profile_ref": {
+      "type": "string"
+    },
+    "permission_profile_ref": {
+      "type": "string"
+    },
+    "external_mappings": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": true
+      }
+    },
+    "annotations": {
+      "type": "object",
+      "additionalProperties": true
+    }
+  },
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "additionalProperties": true
+}

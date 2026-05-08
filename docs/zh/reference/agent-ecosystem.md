@@ -1,0 +1,52 @@
+---
+title: Agent standards ecosystem
+description: Mutual links across Agent Knowledge, Agent UI, Agent Runtime, Agent Evidence, Agent Policy, Agent Artifact, and Agent Tool.
+---
+
+# Agent 标准生态
+
+The Agent standards ecosystem splits agent products into portable contracts. Each standard owns one layer of meaning and links to the others through stable refs instead of swallowing their responsibilities.
+
+## Agent Tool 的位置
+
+Agent Tool owns portable tool facts: declarations, surfaces, capability refs, input/output contracts, execution profiles, permission profiles, invocations, progress, results, errors, and audit refs.
+
+Tool explains what capability was exposed, how it was selected, what call was made, how it progressed, what result came back, and how native protocol ids relate to runtime, UI, evidence, policy, artifact, knowledge, and skills.
+
+## 当前标准
+
+| Standard | Role | Site | LLM context | Repository |
+| --- | --- | --- | --- | --- |
+| Agent Knowledge | Source-grounded knowledge packs for agents. | [site](https://limecloud.github.io/agentknowledge/) | [llms-full](https://limecloud.github.io/agentknowledge/llms-full.txt) | [repo](https://github.com/limecloud/agentknowledge) |
+| Agent UI | Interaction surfaces for agent products. | [site](https://limecloud.github.io/agentui/) | [llms-full](https://limecloud.github.io/agentui/llms-full.txt) | [repo](https://github.com/limecloud/agentui) |
+| Agent Runtime | Execution facts, controls, tasks, tools, and recovery. | [site](https://limecloud.github.io/agentruntime/) | [llms-full](https://limecloud.github.io/agentruntime/llms-full.txt) | [repo](https://github.com/limecloud/agentruntime) |
+| Agent Evidence | Evidence, provenance, verification, review, replay, and export. | [site](https://limecloud.github.io/agentevidence/) | [llms-full](https://limecloud.github.io/agentevidence/llms-full.txt) | [repo](https://github.com/limecloud/agentevidence) |
+| Agent Policy | Risk, permission, approval, retention, waiver, access, and policy decision facts. | [site](https://limecloud.github.io/agentpolicy/) | [llms-full](https://limecloud.github.io/agentpolicy/llms-full.txt) | [repo](https://github.com/limecloud/agentpolicy) |
+| Agent Artifact | Durable deliverables, versions, parts, previews, exports, source links, and handoff packages. | [site](https://limecloud.github.io/agentartifact/) | [llms-full](https://limecloud.github.io/agentartifact/llms-full.txt) | [repo](https://github.com/limecloud/agentartifact) |
+| Agent Tool | 工具声明、工具面、调用、进度、结果、权限和审计引用。 | [site](https://limecloud.github.io/agenttool/) | [llms-full](https://limecloud.github.io/agenttool/llms-full.txt) | [repo](https://github.com/limecloud/agenttool) |
+
+## 边界规则
+
+```text
+Agent Knowledge -> what durable source-grounded context an agent can use
+Agent Runtime   -> how agent work is accepted, executed, controlled, and resumed
+Agent UI        -> how agent work is projected into user-visible surfaces
+Agent Evidence  -> why an agent outcome can be trusted, reviewed, replayed, and exported
+Agent Policy    -> whether an agent action may proceed and under which constraints
+Agent Artifact  -> what durable deliverable the agent produced and how it changes
+Agent Tool      -> what capability was exposed, invoked, progressed, and returned
+```
+
+No standard should become the whole stack. A compatible implementation should preserve native ids and link across standards with refs.
+
+## 未来候选标准
+
+| Candidate | Why it may become a standard |
+| --- | --- |
+| Agent Context | Working context, memory, compaction, missing context, and source selection boundaries. |
+| Agent Evaluation | Acceptance scenarios, rubrics, eval runs, quality gates, and evidence-backed benchmark records. |
+| Agent Workflow | Portable multi-step work plans, scene launches, background jobs, and handoff states. |
+| Agent Model Routing | Task profiles, model candidates, routing decisions, fallback, quota, and cost records. |
+| Agent Channel | Remote runtime, A2A peers, webhooks, deep links, browser sessions, and desktop bridges. |
+
+These candidates should remain design notes until they can be specified without relying on one product implementation.

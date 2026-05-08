@@ -1,0 +1,64 @@
+{
+  "title": "Agent Tool surface",
+  "type": "object",
+  "required": [
+    "schema_version",
+    "surface_id",
+    "scope",
+    "tool_refs"
+  ],
+  "properties": {
+    "schema_version": {
+      "type": "string"
+    },
+    "surface_id": {
+      "type": "string"
+    },
+    "scope": {
+      "type": "string"
+    },
+    "created_at": {
+      "type": "string"
+    },
+    "producer": {
+      "type": "string"
+    },
+    "tool_refs": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "deferred_tools": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "blocked_tools": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": true
+      }
+    },
+    "selection_policy": {
+      "type": "object",
+      "additionalProperties": true
+    },
+    "policy_refs": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "runtime_refs": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    }
+  },
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "additionalProperties": true
+}
